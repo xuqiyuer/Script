@@ -45,16 +45,21 @@ $.info = {};
       $.log(`\n开始【京东账号${i + 1}】${userName}`);
       
       const beginInfo = await getUserInfo();
-      
+      await $.wait(500);
+      await querySignList();
+/**
+*
       await $.wait(500);
       await getMoney();
-      await $.wait(500);
-      await treasureHunt();
+      
       await $.wait(500);
       await getTaskList();
       await $.wait(500);
       await browserTask();
-      
+      await $.wait(500);
+      await treasureHunt();
+*
+**/
       const endInfo = await getUserInfo();
       $.result.push(
         `名称：京喜财富岛`,
@@ -101,9 +106,50 @@ function getUserInfo() {
   });
 }
 
-//获取宝箱任务
-//GET /jxcfd/consume/GetAdvancedBox?strZone=jxcfd&bizCode=jxcfd&source=jxcfd&dwEnv=7&_cfd_t=1606923650844&ptag=138631.26.55&_stk=_cfd_t%2CbizCode%2CdwEnv%2Cptag%2Csource%2CstrZone&_ste=1&h5st=20201202234050845%3B8183163432738160%3B10009%3Btk01w9f7c1c01a8nSDVybnU2b3lMEYRtFNtXiAo6Z0BJLI7QSOHrsTPHEheibS%2F2cyD6RSFZHwHIWaBNxeHWeZEhzTTh%3B8066c6939083d5cd828b90ad72a7428333496bef65ed0baa1f068b293c6a6453&_=1606923650846&sceneval=2&g_login_type=1&callback=jsonpCBKHHH&g_ty=ls HTTP/1.1
 
+//签到列表
+//GET /jxcfd/task/QuerySignListV2?strZone=jxcfd&bizCode=jxcfd&source=jxcfd&dwEnv=7&_cfd_t=1607013109684&ptag=138631.26.55&_=1607013109686&sceneval=2&g_login_type=1&callback=jsonpCBKN&g_ty=ls
+
+function querySignList(){
+  return new Promise(async resovle => {
+    $.get(taskUrl(`task/QuerySignListV2`), async (err,resp, data) => {
+      try{
+        $.log(data);
+        const { iRet, sData: { Sign = [] } = {}, sErrMsg } = JSON.parse(data);
+        for(let i = 0 ; i < Sign.length ; i++){
+          //$.log(Sign[i].dwSignDayTime +' '+Date.now());
+          if(Sign[i].dwStatus === 0){
+            await userSignReward(Sign[i].dwReqUserFlag , Sign[i].dwReqUserFlag);
+            break;
+          }
+        }
+      } catch (e) {
+        $.logErr(e, resp);
+      } finally {
+        resolve();
+      }
+    });
+  });
+}
+
+//签到
+//GET /jxcfd/task/UserSignRewardV2?strZone=jxcfd&bizCode=jxcfd&source=jxcfd&dwEnv=7&_cfd_t=1607013113459&ptag=138631.26.55&dwReqUserFlag=1&ddwMoney=3600&_=1607013113460&sceneval=2&g_login_type=1&callback=jsonpCBKQ&g_ty=ls HTTP/1.1
+
+async function userSignReward( dwReqUserFlag, dwReqUserFlag ){
+  return new Promise(async resovle => {
+    $.get(taskUrl(`task/UserSignRewardV2`, `dwReqUserFlag=${dwReqUserFlag}&ddwMoney=${dwReqUserFlag}`), async (err,resp, data) => {
+      try{
+        //$.log(data)
+        const { iRet, sData, sErrMsg } = JSON.parse(data);
+        $.log(`\n签到：${sErrMsg}，获得财富 ¥ ${ sData.dwMoney }\n${$.showLog ? data : ''}`);
+      } catch (e) {
+        $.logErr(e, resp);
+      } finally {
+        resolve();
+      }
+    });
+  });
+}
 
 //领取财富值
 function getMoney(){
@@ -155,7 +201,12 @@ function doTreasureHunt(place){
   });
 }
 
-//获取任务列表
+//成就赚财富
+//GET /jxcfd/consume/AchieveInfo?strZone=jxcfd&bizCode=jxcfd&source=jxcfd&dwEnv=7&_cfd_t=1607013109572&ptag=138631.26.55&_stk=_cfd_t%2CbizCode%2CdwEnv%2Cptag%2Csource%2CstrZone&_ste=1&h5st=20201204003149574%3B8183163432738160%3B10009%3Btk01w9f7c1c01a8nSDVybnU2b3lMEYRtFNtXiAo6Z0BJLI7QSOHrsTPHEheibS%2F2cyD6RSFZHwHIWaBNxeHWeZEhzTTh%3B6cfe97b3240fc778a95cd7d357aec39002878211f398a32793387d2677f5d150&_=1607013109576&sceneval=2&g_login_type=1&callback=jsonpCBKM&g_ty=ls HTTP/1.1
+
+//GET /jxcfd/consume/AchieveAward?strZone=jxcfd&bizCode=jxcfd&source=jxcfd&dwEnv=7&_cfd_t=1607013860702&ptag=138631.26.55&strTaskIndex=11&_stk=_cfd_t%2CbizCode%2CdwEnv%2Cptag%2Csource%2CstrTaskIndex%2CstrZone&_ste=1&h5st=20201204004420702%3B8183163432738160%3B10009%3Btk01w9f7c1c01a8nSDVybnU2b3lMEYRtFNtXiAo6Z0BJLI7QSOHrsTPHEheibS%2F2cyD6RSFZHwHIWaBNxeHWeZEhzTTh%3B325fc0d756cd235c1d0efbe0d59ce71b041371165db980365280d6a3edce2a5e&_=1607013860705&sceneval=2&g_login_type=1&callback=jsonpCBKJJJ&g_ty=ls HTTP/1.1
+
+//日常赚财富
 function getTaskList() {
   return new Promise(async resolve => {
     $.get(taskListUrl('GetUserTaskStatusList'), async (err, resp, data) => {
@@ -179,7 +230,7 @@ function browserTask() {
     const times = Math.max(...[...$.allTask].map(x => x.configTargetTimes));
     for (let i = 0; i < $.allTask.length; i++) {
       const task = $.allTask[i];
-      $.log(`\n开始第${i + 1}个任务：${task.taskName}`);
+      $.log(`\n开始第${i + 1}个日常任务：${task.taskName}`);
       const status = [true, true];
       for (let i = 0; i < times; i++) {
         await $.wait(500);
@@ -196,7 +247,7 @@ function browserTask() {
           break;
         }
       }
-      $.log(`\n结束第${i + 1}个任务：${task.taskName}\n`);
+      $.log(`\n结束第${i + 1}个日常任务：${task.taskName}\n`);
     }
     resolve();
   });
@@ -207,7 +258,7 @@ function doTask({ taskId, completedTimes, configTargetTimes, taskName }) {
   return new Promise(async resolve => {
     if (parseInt(completedTimes) >= parseInt(configTargetTimes)) {
       resolve(false);
-      $.log(`\n${taskName}[做任务]： mission success`);
+      $.log(`\n${taskName}[做日常任务]： mission success`);
       return;
     }
     $.get(taskListUrl(`DoTask`,`taskId=${taskId}`), (err, resp, data) => {
@@ -224,6 +275,7 @@ function doTask({ taskId, completedTimes, configTargetTimes, taskName }) {
     });
   });
 }
+
 
 //领取奖励
 function awardTask({ taskId, taskName }) {
@@ -242,7 +294,11 @@ function awardTask({ taskId, taskName }) {
     });
   });
 }
-  
+
+//获取宝箱任务
+//GET /jxcfd/consume/GetAdvancedBox?strZone=jxcfd&bizCode=jxcfd&source=jxcfd&dwEnv=7&_cfd_t=1606923650844&ptag=138631.26.55&_stk=_cfd_t%2CbizCode%2CdwEnv%2Cptag%2Csource%2CstrZone&_ste=1&h5st=20201202234050845%3B8183163432738160%3B10009%3Btk01w9f7c1c01a8nSDVybnU2b3lMEYRtFNtXiAo6Z0BJLI7QSOHrsTPHEheibS%2F2cyD6RSFZHwHIWaBNxeHWeZEhzTTh%3B8066c6939083d5cd828b90ad72a7428333496bef65ed0baa1f068b293c6a6453&_=1606923650846&sceneval=2&g_login_type=1&callback=jsonpCBKHHH&g_ty=ls HTTP/1.1
+
+
 function getCookies() {
   if ($.isNode()) {
     $.cookieArr = Object.values(jdCookieNode);
