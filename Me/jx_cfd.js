@@ -27,7 +27,7 @@ $.showLog = $.getdata("jx_showLog")
 $.notifyTime = $.getdata("jx_notifyTime");
 $.result = [];
 $.cookieArr = [];
-$.currentCookie = "pt_key=AAJfotMwADA3mtE8xIDG1Db7gA2OZ8uJT8FIXFLwOPNIUepzJw8FOqjNpKqnboSK5xoB-tEX4TM;pt_pin=CCDreamm;";
+$.currentCookie = '';
 $.allTask = [];
 $.info = {};
 
