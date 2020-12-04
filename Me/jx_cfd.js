@@ -23,11 +23,11 @@ const JD_API_HOST = "https://m.jingxi.com/";
 const jdCookieNode = $.isNode() ? require("./jdCookie.js") : "";
 $.showLog = $.getdata("jx_showLog")
   ? $.getdata("jx_showLog") === "true"
-  : false;
+  : true;
 $.notifyTime = $.getdata("jx_notifyTime");
 $.result = [];
 $.cookieArr = [];
-$.currentCookie = "";
+$.currentCookie = "pt_key=AAJfotMwADA3mtE8xIDG1Db7gA2OZ8uJT8FIXFLwOPNIUepzJw8FOqjNpKqnboSK5xoB-tEX4TM;pt_pin=CCDreamm;";
 $.allTask = [];
 $.info = {};
 
@@ -146,7 +146,7 @@ async function userSignReward(ddwMoney) {
           //$.log(data)
           const { iRet, sData, sErrMsg } = JSON.parse(data);
           $.log(
-            `\n签到：${sErrMsg}，获得财富 ¥ ${sData.ddwMoney || 0}\n${
+            `\n签到：${sErrMsg}，获得财富 ¥ ${sData.dwMoney || 0}\n${
               $.showLog ? data : ""
             }`
           );
@@ -170,10 +170,9 @@ function getMoney() {
       ),
       async (err, resp, data) => {
         try {
-          //$.log(data);
           const { iRet, dwMoney, sErrMsg } = JSON.parse(data);
           $.log(
-            `\n状态：${sErrMsg} 获取财富值：¥ ${ddwMoney || 0}\n${
+            `\n状态：${sErrMsg} 获取财富值：¥ ${dwMoney || 0}\n${
               $.showLog ? data : ""
             }`
           );
@@ -190,9 +189,12 @@ function getMoney() {
 //捡地上的奖励
 async function treasureHunt() {
   const place = ["tree", "wood", "small_stone"];
+  let placeStatus = false;
   for (let i = 0; i < place.length; i++) {
-    await doTreasureHunt(place[i]);
-    //不能操之过急
+    placeStatus = await doTreasureHunt(place[i]);
+    if (placeStatus) {
+      break;
+    }
     await $.wait(3000);
   }
 }
@@ -204,12 +206,13 @@ function doTreasureHunt(place) {
       async (err, resp, data) => {
         try {
           //$.log(data);
-          const { iRet, dwExpericnce, sErrMsg } = JSON.parse(data);
+          const { iRet, dwExperience, sErrMsg } = JSON.parse(data);
           $.log(
-            `\n状态：${sErrMsg} 获取随机奖励：¥ ${dwExpericnce} \n${
+            `\n状态：${sErrMsg} 获取随机奖励：¥ ${dwExperience || 0} \n${
               $.showLog ? data : ""
             }`
           );
+          resolve(iRet === 0)
         } catch (e) {
           $.logErr(e, resp);
         } finally {
@@ -288,7 +291,7 @@ function doTask({ taskId, completedTimes, configTargetTimes, taskName }) {
         //$.log(`taskId:${taskId},data:${data}`);
         const { msg, ret } = JSON.parse(data);
         $.log(
-          `\n${taskName}[做任务]： ${
+          `\n${taskName}[做任务]：${
             msg.indexOf("活动太火爆了") !== -1
               ? "任务进行中或者未到任务时间"
               : msg
@@ -309,15 +312,14 @@ function awardTask({ taskId, taskName }) {
   return new Promise((resolve) => {
     $.get(taskListUrl(`Award`, `taskId=${taskId}`), (err, resp, data) => {
       try {
-        //$.log(`taskId:${taskId},data:${data}`);
-        const { msg, ret, data: { prizeInfo = {} } = {} } = JSON.parse(data);
-        $.log(
-          `\n${taskName}[领奖励]：${
-            msg.indexOf("活动太火爆了") !== -1
-              ? "任务进行中或者未到任务时间"
-              : msg
-          }${msg && '：获得财富值 ¥ ' + prizeInfo.ddwMoney || 0}\n${$.showLog ? data : ""}`
-        );
+        const { msg, ret, data: { prizeInfo = '' } = {} } = JSON.parse(data);
+        let str = '';
+        if (msg.indexOf('活动太火爆了') !== -1) {
+          str = '任务为成就任务或者未到任务时间';
+        } else {
+          str = msg + prizeInfo ? ` 获得财富值 ¥ ${JSON.parse(prizeInfo).ddwMoney}` : '';
+        }
+        $.log(`${taskName}[领奖励]：${str}\n${$.showLog ? data : ''}`);
         resolve(ret === 0);
       } catch (e) {
         $.logErr(e, resp);
