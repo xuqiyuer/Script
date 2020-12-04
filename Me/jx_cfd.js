@@ -15,6 +15,9 @@
     cron "30 23 * * *" script-path=https://raw.githubusercontent.com/MoPoQAQ/Script/main/Me/jx_cfd.js,tag=京喜财富岛
     Surge:
     京喜财富岛 = type=cron,cronexp="30 23 * * *",wake-system=1,timeout=20,script-path=https://raw.githubusercontent.com/MoPoQAQ/Script/main/Me/jx_cfd.js
+
+    BoxJS订阅
+    https://raw.githubusercontent.com/whyour/hundun/master/quanx/whyour.boxjs.json
 *
 **/
 
