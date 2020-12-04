@@ -107,7 +107,7 @@ function getUserInfo() {
 
 //签到列表
 function querySignList(){
-  return new Promise(async resovle => {
+  return new Promise(async resolve => {
     $.get(taskUrl(`task/QuerySignListV2`), async (err,resp, data) => {
       try{
         $.log(data);
@@ -130,7 +130,7 @@ function querySignList(){
 
 //签到
 async function userSignReward( dwReqUserFlag, dwReqUserFlag ){
-  return new Promise(async resovle => {
+  return new Promise(async resolve => {
     $.get(taskUrl(`task/UserSignRewardV2`, `dwReqUserFlag=${dwReqUserFlag}&ddwMoney=${dwReqUserFlag}`), async (err,resp, data) => {
       try{
         //$.log(data)
