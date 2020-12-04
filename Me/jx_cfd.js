@@ -20,7 +20,7 @@
 
 const $ = new Env("京喜财富岛");
 const JD_API_HOST = "https://m.jingxi.com/";
-// const jdCookieNode = $.isNode() ? require("./jdCookie.js") : "";
+const jdCookieNode = $.isNode() ? require("./jdCookie.js") : "";
 $.showLog = $.getdata("jx_showLog")
   ? $.getdata("jx_showLog") === "true"
   : false;
@@ -146,7 +146,7 @@ async function userSignReward(ddwMoney) {
           //$.log(data)
           const { iRet, sData, sErrMsg } = JSON.parse(data);
           $.log(
-            `\n签到：${sErrMsg}，获得财富 ¥ ${sData.dwMoney || 0}\n${
+            `\n签到：${sErrMsg}，获得财富 ¥ ${sData.ddwMoney || 0}\n${
               $.showLog ? data : ""
             }`
           );
@@ -173,7 +173,7 @@ function getMoney() {
           //$.log(data);
           const { iRet, dwMoney, sErrMsg } = JSON.parse(data);
           $.log(
-            `\n状态：${sErrMsg} 获取财富值：¥ ${dwMoney || 0}\n${
+            `\n状态：${sErrMsg} 获取财富值：¥ ${ddwMoney || 0}\n${
               $.showLog ? data : ""
             }`
           );
