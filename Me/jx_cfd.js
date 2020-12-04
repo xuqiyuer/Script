@@ -24,10 +24,10 @@
 const $ = new Env("京喜财富岛");
 const JD_API_HOST = "https://m.jingxi.com/";
 const jdCookieNode = $.isNode() ? require("./jdCookie.js") : "";
-$.showLog = $.getdata("jx_showLog")
-  ? $.getdata("jx_showLog") === "true"
-  : true;
-$.notifyTime = $.getdata("jx_notifyTime");
+$.showLog = $.getdata("cfd_showLog")
+  ? $.getdata("cfd_showLog") === "true"
+  : false;
+$.notifyTime = $.getdata("cfd_notifyTime");
 $.result = [];
 $.cookieArr = [];
 $.currentCookie = '';
