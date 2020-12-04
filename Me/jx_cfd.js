@@ -1,12 +1,12 @@
 /**
 *
     Name:京喜财富岛
-    
+
     Thanks:
        whyour大佬
        TG：https://t.me/joinchat/O1WgnBbM18YjQQVFQ_D86w
        GitHub：https://github.com/whyour
-    
+
     Quantumult X:
     [task_local]
     30 23 * * * https://raw.githubusercontent.com/MoPoQAQ/Script/main/Me/jx_cfd.js, tag=京喜财富岛, img-url=https://raw.githubusercontent.com/58xinian/icon/master/jxcfd.png, enabled=true
@@ -18,19 +18,16 @@
 *
 **/
 
-const $ = new Env('财富岛');
-const JD_API_HOST = 'https://m.jingxi.com/';
-const jdCookieNode = $.isNode() ? require('./jdCookie.js') : '';
-//BoxJS参数设置
-/**
-*
-$.showLog = $.getdata('jx_showLog') ? $.getdata('jx_showLog') === 'true' : false;
-$.notifyTime = $.getdata('jx_notifyTime');
-*
-**/
+const $ = new Env("京喜财富岛");
+const JD_API_HOST = "https://m.jingxi.com/";
+// const jdCookieNode = $.isNode() ? require("./jdCookie.js") : "";
+$.showLog = $.getdata("jx_showLog")
+  ? $.getdata("jx_showLog") === "true"
+  : false;
+$.notifyTime = $.getdata("jx_notifyTime");
 $.result = [];
 $.cookieArr = [];
-$.currentCookie = '';
+$.currentCookie = "";
 $.allTask = [];
 $.info = {};
 
@@ -40,47 +37,55 @@ $.info = {};
     $.currentCookie = $.cookieArr[i];
     if ($.currentCookie) {
       const userName = decodeURIComponent(
-        $.currentCookie.match(/pt_pin=(.+?);/) && $.currentCookie.match(/pt_pin=(.+?);/)[1],
+        $.currentCookie.match(/pt_pin=(.+?);/) &&
+          $.currentCookie.match(/pt_pin=(.+?);/)[1]
       );
       $.log(`\n开始【京东账号${i + 1}】${userName}`);
-      
+
       const beginInfo = await getUserInfo();
       await $.wait(500);
       await querySignList();
 
       await $.wait(500);
       await getMoney();
-      
+
       await $.wait(500);
       await getTaskList();
       await $.wait(500);
       await browserTask();
       await $.wait(500);
       await treasureHunt();
-      
+
       const endInfo = await getUserInfo();
       $.result.push(
-        `名称：京喜财富岛`,
         `任务前财富值：${beginInfo.ddwMoney} 任务后财富值：${endInfo.ddwMoney}`,
-        `获得财富值：${endInfo.ddwMoney - beginInfo.ddwMoney}`,
+        `获得财富值：${endInfo.ddwMoney - beginInfo.ddwMoney}`
       );
     }
   }
   await showMsg();
 })()
-  .catch(e => $.logErr(e))
+  .catch((e) => $.logErr(e))
   .finally(() => $.done());
 
 //暂时不知道需要什么信息。。。。
 //{"Card":[],"GoodPrivilege":{"PrizeLevel":[],"ddwPeriodId":0,"ddwPrivilegeId":0,"ddwStopTime":0,"ddwUserMoney":30896,"dwDiscMoney":0,"dwDiscount":0,"dwNeedMoney":0,"dwOriginMoney":0,"dwStatus":1,"dwSurplusTime":0,"strPrizePool":""},"Interactive":{},"RecommendExchange":{"ddwPaperMoney":0,"dwHaveRecommend":0,"dwLvl":0,"strPoolName":"","strPrizeName":"","strPrizePic":""},"RedPack":{"dwCanDraw":0},"SceneList":{"1001":{"AllEmployeeList":{},"EmployeeList":{},"SuperEmployee":{"dwAwardMoney":0,"dwEmployeeNum":0,"dwHasActived":1,"dwMaxEmployeeNum":6,"dwNewEmployeeNum":0},"dwCostMoey":1,"dwEmployeeNum":0,"dwEmployeeSpeed":145,"dwMaxEmployeeNum":12,"dwSceneId":1001,"dwSceneMoney":2600,"strSceneName":"欢乐牧场"}},"XbStatus":{"XBDetail":[{"ddwColdEndTm":0,"dwRemainCnt":3,"strIndex":"small_stone"},{"ddwColdEndTm":0,"dwRemainCnt":3,"strIndex":"tree"},{"ddwColdEndTm":0,"dwRemainCnt":3,"strIndex":"wood"}],"dwXBRemainCnt":9},"ddwExperience":30896,"ddwMoney":30896,"dwAccessGift":3,"dwAccessMoney":1,"dwBoxType":0,"dwCurTime":1606976501,"dwIsAssisted":0,"dwIsBlack":0,"dwIsCloseAppService":0,"dwIsDefaultPin":0,"dwIsHaveBoxInfo":0,"dwIsIncrLevel":0,"dwIsNewUser":0,"dwIsStopProduce":0,"dwLevel":2,"dwNoVaildCard":1,"dwPeriodProduced":2600,"dwProductivity":333,"dwSwitch":1,"dwZcfStatus":3,"goodprivilege":[],"goodprivilegepool":"","iRet":0,"sErrMsg":"success","strHeadPic":"https://thirdwx.qlogo.cn/mmopen/vi_32/Q0j4TwGTfTKTVpoI8Q6ialgXShZoMFZHIlBPlrPs4y8fX2LFz8cUpNzDjzibfbSRiadKhCCMFiaQp4rSZleVCyNjnQ/132","strMyShareId":"90A15070F26FE5335C0DD5B80BC737B5C0D89A4A3509F9C0E450E23AB72AEA5D","strNickname":"墨*","strPin":"jd_5a3d9cc737f52"}
 function getUserInfo() {
-  return new Promise(resolve => {
-    $.get(taskUrl('user/QueryUserInfo'), async (err, resp, data) => {
+  return new Promise((resolve) => {
+    $.get(taskUrl("user/QueryUserInfo"), async (err, resp, data) => {
       try {
         //$.log(data);
-        const { iret, SceneList, ddwMoney, sErrMsg, strMyShareId , strPin } = JSON.parse(data);
-        $.log(`\n获取用户信息：${sErrMsg}\n${$.showLog ? data : ''}`);     
-        var sceneId = eval('(' + JSON.stringify(SceneList) + ')')['1001'].dwSceneId;        
+        const {
+          iret,
+          SceneList,
+          ddwMoney,
+          sErrMsg,
+          strMyShareId,
+          strPin,
+        } = JSON.parse(data);
+        $.log(`\n获取用户信息：${sErrMsg}\n${$.showLog ? data : ""}`);
+        var sceneId = eval("(" + JSON.stringify(SceneList) + ")")["1001"]
+          .dwSceneId;
         //$.log();
         $.info = {
           ...$.info,
@@ -104,20 +109,20 @@ function getUserInfo() {
   });
 }
 
-
 //签到列表
-function querySignList(){
-  return new Promise(async resolve => {
-    $.get(taskUrl(`task/QuerySignListV2`), async (err,resp, data) => {
-      try{
-        $.log(data);
+function querySignList() {
+  return new Promise(async (resolve) => {
+    $.get(taskUrl(`task/QuerySignListV2`), async (err, resp, data) => {
+      try {
         const { iRet, sData: { Sign = [] } = {}, sErrMsg } = JSON.parse(data);
-        for(let i = 0 ; i < Sign.length ; i++){
-          //$.log(Sign[i].dwSignDayTime +' '+Date.now());
-          if(Sign[i].dwStatus === 0){
-            await userSignReward(Sign[i].dwReqUserFlag , Sign[i].dwReqUserFlag);
-            break;
-          }
+        $.log(
+          `\n签到列表：${sErrMsg}\n${
+            $.showLog ? data : ""
+          }`
+        );
+        const nextSign = Sign.filter(x => x.dwStatus === 0)[0];
+        if (nextSign && nextSign.ddwMoney) {
+          await userSignReward(nextSign.ddwMoney);
         }
       } catch (e) {
         $.logErr(e, resp);
@@ -129,69 +134,89 @@ function querySignList(){
 }
 
 //签到
-async function userSignReward( dwReqUserFlag, dwReqUserFlag ){
-  return new Promise(async resolve => {
-    $.get(taskUrl(`task/UserSignRewardV2`, `dwReqUserFlag=${dwReqUserFlag}&ddwMoney=${dwReqUserFlag}`), async (err,resp, data) => {
-      try{
-        //$.log(data)
-        const { iRet, sData, sErrMsg } = JSON.parse(data);
-        $.log(`\n签到：${sErrMsg}，获得财富 ¥ ${ sData.dwMoney }\n${$.showLog ? data : ''}`);
-      } catch (e) {
-        $.logErr(e, resp);
-      } finally {
-        resolve();
-      }
-    });
-  });
-}
-
-//领取财富值
-function getMoney(){
-  return new Promise(async resolve => {
+async function userSignReward(ddwMoney) {
+  return new Promise(async (resolve) => {
     $.get(
-      taskUrl('user/GetMoney', `dwSceneId=${$.info.sceneId}&strEmployeeId=undefined&dwSource=1`),
+      taskUrl(
+        `task/UserSignRewardV2`,
+        `dwReqUserFlag=1&ddwMoney=${ddwMoney}`
+      ),
       async (err, resp, data) => {
         try {
-          //$.log(data);
-          const {
-            iRet,
-            dwMoney,
-            sErrMsg,
-          } = JSON.parse(data);
-          $.log(`\n状态：${sErrMsg} 获取财富值：¥ ${ dwMoney}\n${$.showLog ? data : ''}`);
+          //$.log(data)
+          const { iRet, sData, sErrMsg } = JSON.parse(data);
+          $.log(
+            `\n签到：${sErrMsg}，获得财富 ¥ ${sData.dwMoney || 0}\n${
+              $.showLog ? data : ""
+            }`
+          );
         } catch (e) {
           $.logErr(e, resp);
         } finally {
           resolve();
         }
-      },
+      }
+    );
+  });
+}
+
+//领取财富值
+function getMoney() {
+  return new Promise(async (resolve) => {
+    $.get(
+      taskUrl(
+        "user/GetMoney",
+        `dwSceneId=${$.info.sceneId}&strEmployeeId=undefined&dwSource=1`
+      ),
+      async (err, resp, data) => {
+        try {
+          //$.log(data);
+          const { iRet, dwMoney, sErrMsg } = JSON.parse(data);
+          $.log(
+            `\n状态：${sErrMsg} 获取财富值：¥ ${dwMoney || 0}\n${
+              $.showLog ? data : ""
+            }`
+          );
+        } catch (e) {
+          $.logErr(e, resp);
+        } finally {
+          resolve();
+        }
+      }
     );
   });
 }
 
 //捡地上的奖励
-async function treasureHunt(){
-  const place = ['tree','wood','small_stone'];
-  for (let i = 0; i < place.length; i++){
-    await doTreasureHunt(place[i]);    
+async function treasureHunt() {
+  const place = ["tree", "wood", "small_stone"];
+  for (let i = 0; i < place.length; i++) {
+    await doTreasureHunt(place[i]);
     //不能操之过急
     await $.wait(3000);
-  }  
+  }
 }
 
-function doTreasureHunt(place){
-  return new Promise(async resolve => {    
-    $.get(taskUrl('consume/TreasureHunt', `strIndex=${place}&dwIsShare=0`), async (err, resp, data) => {
-      try {
-        //$.log(data);
-        const {iRet, dwExpericnce, sErrMsg } = JSON.parse(data);
-        $.log(`\n状态：${sErrMsg} 获取随机奖励：¥ ${ dwExpericnce} \n${$.showLog ? data : ''}`);
-      } catch (e) {
-        $.logErr(e, resp);
-      } finally {
-        resolve();
+function doTreasureHunt(place) {
+  return new Promise(async (resolve) => {
+    $.get(
+      taskUrl("consume/TreasureHunt", `strIndex=${place}&dwIsShare=0`),
+      async (err, resp, data) => {
+        try {
+          //$.log(data);
+          const { iRet, dwExpericnce, sErrMsg } = JSON.parse(data);
+          $.log(
+            `\n状态：${sErrMsg} 获取随机奖励：¥ ${dwExpericnce} \n${
+              $.showLog ? data : ""
+            }`
+          );
+        } catch (e) {
+          $.logErr(e, resp);
+        } finally {
+          resolve();
+        }
       }
-    });
+    );
   });
 }
 
@@ -202,13 +227,16 @@ function doTreasureHunt(place){
 
 //日常赚财富
 function getTaskList() {
-  return new Promise(async resolve => {
-    $.get(taskListUrl('GetUserTaskStatusList'), async (err, resp, data) => {
+  return new Promise(async (resolve) => {
+    $.get(taskListUrl("GetUserTaskStatusList"), async (err, resp, data) => {
       try {
-        //$.log(data);
-        const { ret, data: { userTaskStatusList = [] } = {}, msg } = JSON.parse(data);
-        $.allTask = userTaskStatusList.filter(x => x.awardStatus !== 1);
-        $.log(`\n获取任务列表 ${msg}，总共${$.allTask.length}个任务！`);
+        const { ret, data: { userTaskStatusList = [] } = {}, msg } = JSON.parse(
+          data
+        );
+        $.allTask = userTaskStatusList.filter((x) => x.awardStatus !== 1);
+        $.log(`\n获取任务列表 ${msg}，总共${$.allTask.length}个任务！\n${
+          $.showLog ? data : ""
+        }`);
       } catch (e) {
         $.logErr(e, resp);
       } finally {
@@ -220,8 +248,8 @@ function getTaskList() {
 
 //浏览任务 + 做任务 + 领取奖励
 function browserTask() {
-  return new Promise(async resolve => {
-    const times = Math.max(...[...$.allTask].map(x => x.configTargetTimes));
+  return new Promise(async (resolve) => {
+    const times = Math.max(...[...$.allTask].map((x) => x.configTargetTimes));
     for (let i = 0; i < $.allTask.length; i++) {
       const task = $.allTask[i];
       $.log(`\n开始第${i + 1}个日常任务：${task.taskName}`);
@@ -249,17 +277,23 @@ function browserTask() {
 
 //做日常任务
 function doTask({ taskId, completedTimes, configTargetTimes, taskName }) {
-  return new Promise(async resolve => {
+  return new Promise(async (resolve) => {
     if (parseInt(completedTimes) >= parseInt(configTargetTimes)) {
       resolve(false);
       $.log(`\n${taskName}[做日常任务]： mission success`);
       return;
     }
-    $.get(taskListUrl(`DoTask`,`taskId=${taskId}`), (err, resp, data) => {
+    $.get(taskListUrl(`DoTask`, `taskId=${taskId}`), (err, resp, data) => {
       try {
         //$.log(`taskId:${taskId},data:${data}`);
         const { msg, ret } = JSON.parse(data);
-        $.log(`\n${taskName}[做任务]： ${msg.indexOf('活动太火爆了') !== -1 ? '任务进行中或者未到任务时间' : msg}\n${$.showLog ? data : ''}`,);
+        $.log(
+          `\n${taskName}[做任务]： ${
+            msg.indexOf("活动太火爆了") !== -1
+              ? "任务进行中或者未到任务时间"
+              : msg
+          }\n${$.showLog ? data : ""}`
+        );
         resolve(ret === 0);
       } catch (e) {
         $.logErr(e, resp);
@@ -270,15 +304,20 @@ function doTask({ taskId, completedTimes, configTargetTimes, taskName }) {
   });
 }
 
-
 //领取奖励
 function awardTask({ taskId, taskName }) {
-  return new Promise(resolve => {
-    $.get(taskListUrl(`Award`,`taskId=${taskId}`), (err, resp, data) => {
+  return new Promise((resolve) => {
+    $.get(taskListUrl(`Award`, `taskId=${taskId}`), (err, resp, data) => {
       try {
         //$.log(`taskId:${taskId},data:${data}`);
-        const { msg, ret, data: { prizeInfo = '' } = {} } = JSON.parse(data);
-        $.log(`\n${taskName}[领奖励]：${msg.indexOf('活动太火爆了') !== -1 ? '任务进行中或者未到任务时间' : msg}：获得财富值 ¥ ${ prizeInfo.ddwMoney}\n${$.showLog ? data : ''}`,);
+        const { msg, ret, data: { prizeInfo = {} } = {} } = JSON.parse(data);
+        $.log(
+          `\n${taskName}[领奖励]：${
+            msg.indexOf("活动太火爆了") !== -1
+              ? "任务进行中或者未到任务时间"
+              : msg
+          }${msg && '：获得财富值 ¥ ' + prizeInfo.ddwMoney || 0}\n${$.showLog ? data : ""}`
+        );
         resolve(ret === 0);
       } catch (e) {
         $.logErr(e, resp);
@@ -292,17 +331,21 @@ function awardTask({ taskId, taskName }) {
 //获取宝箱任务
 //GET /jxcfd/consume/GetAdvancedBox?strZone=jxcfd&bizCode=jxcfd&source=jxcfd&dwEnv=7&_cfd_t=1606923650844&ptag=138631.26.55&_stk=_cfd_t%2CbizCode%2CdwEnv%2Cptag%2Csource%2CstrZone&_ste=1&h5st=20201202234050845%3B8183163432738160%3B10009%3Btk01w9f7c1c01a8nSDVybnU2b3lMEYRtFNtXiAo6Z0BJLI7QSOHrsTPHEheibS%2F2cyD6RSFZHwHIWaBNxeHWeZEhzTTh%3B8066c6939083d5cd828b90ad72a7428333496bef65ed0baa1f068b293c6a6453&_=1606923650846&sceneval=2&g_login_type=1&callback=jsonpCBKHHH&g_ty=ls HTTP/1.1
 
-
 function getCookies() {
   if ($.isNode()) {
     $.cookieArr = Object.values(jdCookieNode);
   } else {
-    $.cookieArr = [$.getdata('CookieJD') || '', $.getdata('CookieJD2') || ''];
+    $.cookieArr = [$.getdata("CookieJD") || "", $.getdata("CookieJD2") || ""];
   }
   if (!$.cookieArr[0]) {
-    $.msg($.name, '【提示】请先获取京东账号一cookie\n直接使用NobyDa的京东签到获取', 'https://bean.m.jd.com/', {
-      'open-url': 'https://bean.m.jd.com/',
-    });
+    $.msg(
+      $.name,
+      "【提示】请先获取京东账号一cookie\n直接使用NobyDa的京东签到获取",
+      "https://bean.m.jd.com/",
+      {
+        "open-url": "https://bean.m.jd.com/",
+      }
+    );
     return false;
   }
   return true;
@@ -313,13 +356,15 @@ function taskUrl(function_path, body) {
     url: `${JD_API_HOST}jxcfd/${function_path}?strZone=jxcfd&bizCode=jxcfd&source=jxcfd&dwEnv=7&_cfd_t=${Date.now()}&ptag=138631.26.55&${body}&_ste=1&_=${Date.now()}&sceneval=2&g_login_type=1&g_ty=ls`,
     headers: {
       Cookie: $.currentCookie,
-      Accept: '*/*',
-      Connection: 'keep-alive',
-      Referer: 'https://st.jingxi.com/fortune_island/index.html?ptag=138631.26.55',
-      'Accept-Encoding': 'gzip, deflate, br',
-      Host: 'm.jingxi.com',
-      'User-Agent': 'jdpingou;iPad;3.15.2;14.2;c18613cab073b19ba6d9f4e49695c585997ad5e7;network/wifi;model/iPad7,5;appBuild/100365;ADID/00000000-0000-0000-0000-000000000000;supportApplePay/1;hasUPPay/0;pushNoticeIsOpen/0;hasOCPay/0;supportBestPay/0;session/68;pap/JA2015_311210;brand/apple;supportJDSHWK/1;Mozilla/5.0 (iPad; CPU OS 14_2 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148',
-      'Accept-Language': 'zh-cn',
+      Accept: "*/*",
+      Connection: "keep-alive",
+      Referer:
+        "https://st.jingxi.com/fortune_island/index.html?ptag=138631.26.55",
+      "Accept-Encoding": "gzip, deflate, br",
+      Host: "m.jingxi.com",
+      "User-Agent":
+        "jdpingou;iPad;3.15.2;14.2;c18613cab073b19ba6d9f4e49695c585997ad5e7;network/wifi;model/iPad7,5;appBuild/100365;ADID/00000000-0000-0000-0000-000000000000;supportApplePay/1;hasUPPay/0;pushNoticeIsOpen/0;hasOCPay/0;supportBestPay/0;session/68;pap/JA2015_311210;brand/apple;supportJDSHWK/1;Mozilla/5.0 (iPad; CPU OS 14_2 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148",
+      "Accept-Language": "zh-cn",
     },
   };
 }
@@ -329,29 +374,33 @@ function taskListUrl(function_path, body) {
     url: `${JD_API_HOST}newtasksys/newtasksys_front/${function_path}?strZone=jxcfd&bizCode=jxcfd&source=jxcfd&dwEnv=7&_cfd_t=${Date.now()}&ptag=138631.26.55&${body}&_ste=1&_=${Date.now()}&sceneval=2&g_login_type=1&g_ty=ls`,
     headers: {
       Cookie: $.currentCookie,
-      Accept: '*/*',
-      Connection: 'keep-alive',
-      Referer: 'https://st.jingxi.com/fortune_island/index.html?ptag=138631.26.55',
-      'Accept-Encoding': 'gzip, deflate, br',
-      Host: 'm.jingxi.com',
-      'User-Agent': 'jdpingou;iPad;3.15.2;14.2;c18613cab073b19ba6d9f4e49695c585997ad5e7;network/wifi;model/iPad7,5;appBuild/100365;ADID/00000000-0000-0000-0000-000000000000;supportApplePay/1;hasUPPay/0;pushNoticeIsOpen/0;hasOCPay/0;supportBestPay/0;session/68;pap/JA2015_311210;brand/apple;supportJDSHWK/1;Mozilla/5.0 (iPad; CPU OS 14_2 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148',
-      'Accept-Language': 'zh-cn',
+      Accept: "*/*",
+      Connection: "keep-alive",
+      Referer:
+        "https://st.jingxi.com/fortune_island/index.html?ptag=138631.26.55",
+      "Accept-Encoding": "gzip, deflate, br",
+      Host: "m.jingxi.com",
+      "User-Agent":
+        "jdpingou;iPad;3.15.2;14.2;c18613cab073b19ba6d9f4e49695c585997ad5e7;network/wifi;model/iPad7,5;appBuild/100365;ADID/00000000-0000-0000-0000-000000000000;supportApplePay/1;hasUPPay/0;pushNoticeIsOpen/0;hasOCPay/0;supportBestPay/0;session/68;pap/JA2015_311210;brand/apple;supportJDSHWK/1;Mozilla/5.0 (iPad; CPU OS 14_2 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148",
+      "Accept-Language": "zh-cn",
     },
   };
 }
 
 function showMsg() {
-  return new Promise(resolve => {
+  return new Promise((resolve) => {
     if ($.notifyTime) {
-      const notifyTimes = $.notifyTime.split(',').map(x => x.split(':'));
-      const now = $.time('HH:mm').split(':');
+      const notifyTimes = $.notifyTime.split(",").map((x) => x.split(":"));
+      const now = $.time("HH:mm").split(":");
       $.log(`\n${JSON.stringify(notifyTimes)}`);
       $.log(`\n${JSON.stringify(now)}`);
-      if (notifyTimes.some(x => x[0] === now[0] && (!x[1] || x[1] === now[1]))) {
-        $.msg($.name, '', `\n${$.result.join('\n')}`);
+      if (
+        notifyTimes.some((x) => x[0] === now[0] && (!x[1] || x[1] === now[1]))
+      ) {
+        $.msg($.name, "", `\n${$.result.join("\n")}`);
       }
     } else {
-      $.msg($.name, '', `\n${$.result.join('\n')}`);
+      $.msg($.name, "", `\n${$.result.join("\n")}`);
     }
     resolve();
   });
