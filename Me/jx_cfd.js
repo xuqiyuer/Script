@@ -47,8 +47,7 @@ $.info = {};
       const beginInfo = await getUserInfo();
       await $.wait(500);
       await querySignList();
-/**
-*
+
       await $.wait(500);
       await getMoney();
       
@@ -58,8 +57,7 @@ $.info = {};
       await browserTask();
       await $.wait(500);
       await treasureHunt();
-*
-**/
+      
       const endInfo = await getUserInfo();
       $.result.push(
         `名称：京喜财富岛`,
@@ -108,8 +106,6 @@ function getUserInfo() {
 
 
 //签到列表
-//GET /jxcfd/task/QuerySignListV2?strZone=jxcfd&bizCode=jxcfd&source=jxcfd&dwEnv=7&_cfd_t=1607013109684&ptag=138631.26.55&_=1607013109686&sceneval=2&g_login_type=1&callback=jsonpCBKN&g_ty=ls
-
 function querySignList(){
   return new Promise(async resovle => {
     $.get(taskUrl(`task/QuerySignListV2`), async (err,resp, data) => {
@@ -133,8 +129,6 @@ function querySignList(){
 }
 
 //签到
-//GET /jxcfd/task/UserSignRewardV2?strZone=jxcfd&bizCode=jxcfd&source=jxcfd&dwEnv=7&_cfd_t=1607013113459&ptag=138631.26.55&dwReqUserFlag=1&ddwMoney=3600&_=1607013113460&sceneval=2&g_login_type=1&callback=jsonpCBKQ&g_ty=ls HTTP/1.1
-
 async function userSignReward( dwReqUserFlag, dwReqUserFlag ){
   return new Promise(async resovle => {
     $.get(taskUrl(`task/UserSignRewardV2`, `dwReqUserFlag=${dwReqUserFlag}&ddwMoney=${dwReqUserFlag}`), async (err,resp, data) => {
