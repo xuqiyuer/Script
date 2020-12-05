@@ -64,6 +64,11 @@ $.info = {};
         `任务前财富值：${beginInfo.ddwMoney} 任务后财富值：${endInfo.ddwMoney}`,
         `获得财富值：${endInfo.ddwMoney - beginInfo.ddwMoney}`
       );
+
+      await $.wait(500);
+      await submitInviteId(userName);
+      await $.wait(500);
+      await createAssistUser();
     }
   }
   await showMsg();
@@ -107,6 +112,57 @@ function getUserInfo() {
         $.logErr(e, resp);
       } finally {
         resolve();
+      }
+    });
+  });
+}
+
+function submitInviteId(userName) {
+  return new Promise(resolve => {
+    if (!$.info || !$.info.strMyShareId) {
+      resolve();
+      return;
+    }
+    $.log('你的互助码: ' + $.info.strMyShareId);
+    $.post(
+      {
+        url: `https://api.ninesix.cc/api/jx-cfd/${$.info.strMyShareId}/${encodeURIComponent(userName)}`,
+      },
+      (err, resp, _data) => {
+        try {
+          const { data = {}, code } = JSON.parse(_data);
+          $.log(`\n邀请码提交：${code}\n${$.showLog ? _data : ''}`);
+          if (data.value) {
+            $.result.push('邀请码提交成功！');
+          }
+        } catch (e) {
+          $.logErr(e, resp);
+        } finally {
+          resolve();
+        }
+      },
+    );
+  });
+}
+
+function createAssistUser() {
+  return new Promise(resolve => {
+    $.get({ url: 'https://api.ninesix.cc/api/jx-cfd' }, (err, resp, _data) => {
+      try {
+        const { data = {} } = JSON.parse(_data);
+        $.log(`\n${data.value}\n${$.showLog ? _data : ''}`);
+        $.get(taskUrl('user/JoinScene', `strShareId=${escape(data.value)}&dwSceneId=${$.info.sceneId}`), (err, resp, data) => {
+          try {
+            const { sErrMsg, data: { rewardMoney = 0 } = {} } = JSON.parse(data);
+            $.log(`\n助力：${sErrMsg}\n${$.showLog ? data : ''}`);
+          } catch (e) {
+            $.logErr(e, resp);
+          } finally {
+            resolve();
+          }
+        });
+      } catch (e) {
+        $.logErr(e, resp);
       }
     });
   });
