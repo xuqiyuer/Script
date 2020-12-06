@@ -273,7 +273,7 @@ function getTaskList(taskType) {
         $.get(taskUrl("consume/AchieveInfo"), async (err, resp, data) => {
           try{
             const { iRet, sErrMsg, taskinfo = [] } = JSON.parse(data);
-            $.allTask = taskinfo.filter((x) => x.dwAwardStatus !== 1);
+            $.allTask = taskinfo.filter((x) => x.dwAwardStatus === 1);
             $.log(`\n获取【成就任务】列表 ${sErrMsg}，总共${$.allTask.length}个任务！\n${$.showLog ? data : ""}`);
           } catch (e) {
             $.logErr(e, resp);
@@ -317,11 +317,10 @@ function browserTask(taskType) {
         }
         break;
       case 1://成就任务
-        //const status = 1;
         for (let i = 0; i < $.allTask.length; i++) {
           const taskinfo = $.allTask[i];
-          $.log(`\n开始第${i + 1}个【成就任务】：${taskinfo.strTaskDescr}`);                   
-          if(taskinfo.dwAwardStatus === Number(0)){
+          $.log(`\n开始第${i + 1}个【成就任务】：${taskinfo.strTaskDescr}`);
+          if(taskinfo.dwAwardStatus === "0"){
             $.log(`\n${taskinfo.strTaskDescr}【领成就奖励】：该成就任务未达到门槛}`);
           } else {
             await $.wait(500);
