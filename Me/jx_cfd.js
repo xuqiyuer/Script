@@ -438,13 +438,14 @@ function submitInviteId(userName) {
 }
 
 //随机助力好友
+//未修改多场景
 function createAssistUser() {
   return new Promise(resolve => {
     $.get({ url: 'https://api.ninesix.cc/api/jx-cfd' }, (err, resp, _data) => {
       try {
         const { data = {} } = JSON.parse(_data);
         $.log(`\n${data.value}\n${$.showLog ? _data : ''}`);
-        $.get(taskUrl('user/JoinScene', `strShareId=${escape(data.value)}&dwSceneId=${$.info.sceneId}`), (err, resp, data) => {
+        $.get(taskUrl('user/JoinScene', `strShareId=${escape(data.value)}&dwSceneId=1001`), (err, resp, data) => {
           try {
             const { sErrMsg, data: { rewardMoney = 0 } = {} } = JSON.parse(data);
             $.log(`\n助力：${sErrMsg}\n${$.showLog ? data : ''}`);
@@ -458,14 +459,6 @@ function createAssistUser() {
         $.logErr(e, resp);
       }
     });
-  });
-}
-
-//获取场景ID
-function getSceneId() {
-  return new Promise((resolve) => {
-    const sceneId = Object.keys($.info.SceneList);
-    resolve(sceneId);
   });
 }
 
