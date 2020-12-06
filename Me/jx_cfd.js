@@ -46,13 +46,12 @@ $.info = {};
       $.log(`\n开始【京东账号${i + 1}】${userName}`);
 
       const beginInfo = await getUserInfo();
-      //await $.wait(500);
-      //await querySignList();
+      await $.wait(500);
+      await querySignList();
 
       await $.wait(500);
       await getMoney();
       
-/**
       //日常任务
       await $.wait(500);
       await getTaskList(0);      
@@ -77,7 +76,7 @@ $.info = {};
       await submitInviteId(userName);
       await $.wait(500);
       await createAssistUser();
-**/
+
     }
   }
   await showMsg();
