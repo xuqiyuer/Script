@@ -46,12 +46,14 @@ $.info = {};
       $.log(`\n开始【京东账号${i + 1}】${userName}`);
 
       const beginInfo = await getUserInfo();
-      await $.wait(500);
-      await querySignList();
+      //await $.wait(500);
+      //await querySignList();
 
       await $.wait(500);
       await getMoney();
-
+      
+/**
+      //日常任务
       await $.wait(500);
       await getTaskList(0);      
       await $.wait(500);
@@ -59,12 +61,12 @@ $.info = {};
 
       await $.wait(500);
       await treasureHunt();
-
+      //成就任务
       await $.wait(500);
       await getTaskList(1);
       await $.wait(500);
       await browserTask(1);
-      
+
       const endInfo = await getUserInfo();
       $.result.push(
         `任务前财富值：${beginInfo.ddwMoney} 任务后财富值：${endInfo.ddwMoney}`,
@@ -75,12 +77,14 @@ $.info = {};
       await submitInviteId(userName);
       await $.wait(500);
       await createAssistUser();
+**/
     }
   }
   await showMsg();
 })()
   .catch((e) => $.logErr(e))
   .finally(() => $.done());
+
 
 function getUserInfo() {
   return new Promise((resolve) => {
@@ -89,25 +93,22 @@ function getUserInfo() {
         //$.log(data);
         const {
           iret,
-          SceneList,
+          SceneList = {},
           ddwMoney,
           sErrMsg,
           strMyShareId,
           strPin,
         } = JSON.parse(data);
         $.log(`\n获取用户信息：${sErrMsg}\n${$.showLog ? data : ""}`);
-        var sceneId = eval("(" + JSON.stringify(SceneList) + ")")["1001"]
-          .dwSceneId;
-        //$.log();
         $.info = {
           ...$.info,
-          sceneId,
+          SceneList,
           ddwMoney,
           strMyShareId,
           strPin,
         };
         resolve({
-          sceneId,
+          SceneList,
           ddwMoney,
           strMyShareId,
           strPin,
@@ -172,29 +173,46 @@ async function userSignReward(ddwMoney) {
   });
 }
 
+//GET /jxcfd/user/GetMoney?strZone=jxcfd&bizCode=jxcfd&source=jxcfd&dwEnv=7&_cfd_t=1607242368537&ptag=138631.26.55&dwSceneId=1001&strEmployeeId=B2C721D9490181CC7A971FE840D69195D99B906348D5B7AA432AC015562A331D&dwSource=2&_=1607242368540&sceneval=2&g_login_type=1&g_ty=ls
 //领取财富值
 function getMoney() {
   return new Promise(async (resolve) => {
-    $.get(
-      taskUrl(
-        `user/GetMoney`,
-        `dwSceneId=${$.info.sceneId}&strEmployeeId=undefined&dwSource=1`
-      ),
-      async (err, resp, data) => {
-        try {
-          const { iRet, dwMoney, sErrMsg } = JSON.parse(data);
-          $.log(
-            `\n状态：${sErrMsg} 获取财富值：¥ ${dwMoney || 0}\n${
-              $.showLog ? data : ""
-            }`
+    const sceneList = eval('('+ JSON.stringify($.info.SceneList) +')');
+    const sceneIds = Object.keys($.info.SceneList);
+    for (sceneId of sceneIds) {
+      const employeeList = eval('('+ JSON.stringify(sceneList[sceneId].EmployeeList) +')');
+      const strEmployeeId = Object.keys(employeeList)
+      if(employeeList !== ""){  
+        for( employeeId of strEmployeeId) {
+          $.get(
+            taskUrl(`user/GetMoney`, `dwSceneId=${sceneId}&strEmployeeId=${employeeId}&dwSource=2`), 
+            async (err, resp, data) => {
+              try {
+                const { dwMoney, iRet, sErrMsg, strPin} = JSON.parse(data);
+                $.log(`\n【${sceneList[sceneId].strSceneName}】好友${strPin} : 获取助力财富值：¥ ${dwMoney || 0}\n${$.showLog ? data : ""}`);
+              } catch (e) {
+                $.logErr(e, resp);
+              } finally {
+                resolve();
+              }
+            }
           );
-        } catch (e) {
-          $.logErr(e, resp);
-        } finally {
-          resolve();
         }
       }
-    );
+      $.get(
+        taskUrl(`user/GetMoney`,`dwSceneId=${sceneId}&strEmployeeId=undefined&dwSource=1`),
+        async (err, resp, data) => {
+          try {
+            const { iRet, dwMoney, sErrMsg } = JSON.parse(data);
+            $.log(`\n【${sceneList[sceneId].strSceneName}】岛主 : ${sErrMsg} 获取财富值：¥ ${dwMoney || 0}\n${$.showLog ? data : ""}`);
+          } catch (e) {
+            $.logErr(e, resp);
+          } finally {
+            resolve();
+          }
+        }
+      );
+    }
   });
 }
 
@@ -220,11 +238,11 @@ function doTreasureHunt(place) {
           //$.log(data);
           const { iRet, dwExperience, sErrMsg } = JSON.parse(data);
           $.log(
-            `\n状态：${sErrMsg} 获取随机奖励：¥ ${dwExperience || 0} \n${
+            `\n寻宝：${sErrMsg} 获取随机奖励：¥ ${dwExperience || 0} \n${
               $.showLog ? data : ""
             }`
           );
-          resolve(iRet === 0)
+          resolve(iRet)
         } catch (e) {
           $.logErr(e, resp);
         } finally {
@@ -345,9 +363,6 @@ function doTask(taskinfo) {
   });
 }
 
-//成就赚财富
-//GET /jxcfd/consume/AchieveAward?strZone=jxcfd&bizCode=jxcfd&source=jxcfd&dwEnv=7&_cfd_t=1607013860702&ptag=138631.26.55&strTaskIndex=11&_=1607013860705&sceneval=2&g_login_type=1&callback=jsonpCBKJJJ&g_ty=ls
-
 //领取奖励
 function awardTask( taskType, taskinfo) {
   return new Promise((resolve) => {
@@ -444,6 +459,14 @@ function createAssistUser() {
         $.logErr(e, resp);
       }
     });
+  });
+}
+
+//获取场景ID
+function getSceneId() {
+  return new Promise((resolve) => {
+    const sceneId = Object.keys($.info.SceneList);
+    resolve(sceneId);
   });
 }
 
