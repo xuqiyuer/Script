@@ -9,12 +9,12 @@
 
     Quantumult X:
     [task_local]
-    30 23 * * * https://raw.githubusercontent.com/MoPoQAQ/Script/main/Me/jx_cfd.js, tag=京喜财富岛, img-url=https://raw.githubusercontent.com/58xinian/icon/master/jxcfd.png, enabled=true
+    0 * * * * https://raw.githubusercontent.com/MoPoQAQ/Script/main/Me/jx_cfd.js, tag=京喜财富岛, img-url=https://raw.githubusercontent.com/58xinian/icon/master/jxcfd.png, enabled=true
     Loon:
     [Script]
-    cron "30 23 * * *" script-path=https://raw.githubusercontent.com/MoPoQAQ/Script/main/Me/jx_cfd.js,tag=京喜财富岛
+    cron "0 * * * *" script-path=https://raw.githubusercontent.com/MoPoQAQ/Script/main/Me/jx_cfd.js,tag=京喜财富岛
     Surge:
-    京喜财富岛 = type=cron,cronexp="30 23 * * *",wake-system=1,timeout=20,script-path=https://raw.githubusercontent.com/MoPoQAQ/Script/main/Me/jx_cfd.js
+    京喜财富岛 = type=cron,cronexp="0 * * * *",wake-system=1,timeout=20,script-path=https://raw.githubusercontent.com/MoPoQAQ/Script/main/Me/jx_cfd.js
 
     BoxJS订阅
     https://raw.githubusercontent.com/whyour/hundun/master/quanx/whyour.boxjs.json
@@ -46,22 +46,19 @@ $.info = {};
       $.log(`\n开始【京东账号${i + 1}】${userName}`);
 
       const beginInfo = await getUserInfo();
-/**
-*
       await $.wait(500);
       await querySignList();
 
       await $.wait(500);
       await getMoney();
-*
-**/
-      //await $.wait(500);
-      //await getTaskList(0);      
-      //await $.wait(500);
-      //await browserTask(0);
-      
-      //await $.wait(500);
-      //await treasureHunt();
+
+      await $.wait(500);
+      await getTaskList(0);      
+      await $.wait(500);
+      await browserTask(0);
+
+      await $.wait(500);
+      await treasureHunt();
 
       await $.wait(500);
       await getTaskList(1);
@@ -73,14 +70,11 @@ $.info = {};
         `任务前财富值：${beginInfo.ddwMoney} 任务后财富值：${endInfo.ddwMoney}`,
         `获得财富值：${endInfo.ddwMoney - beginInfo.ddwMoney}`
       );
-/**
-*
+
       await $.wait(500);
       await submitInviteId(userName);
       await $.wait(500);
       await createAssistUser();
-*
-**/
     }
   }
   await showMsg();
