@@ -1,6 +1,3 @@
-// Variables used by Scriptable.
-// These must be at the very top of the file. Do not edit.
-// icon-color: deep-gray; icon-glyph: magic;
 /**
 *
     Name: 京喜财富岛
@@ -24,9 +21,8 @@
     
     Feature:
       岛主寻宝大作战
-      娱乐中心
-      提现
       超级工人
+      提现      
 *
 **/
 
