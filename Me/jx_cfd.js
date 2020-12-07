@@ -80,6 +80,10 @@ $.info = {};
       await getTaskList(1);
       await $.wait(500);
       await browserTask(1);
+      
+      //抽奖
+      await $.wait(500);
+      await funCenterState();
 
       const endInfo = await getUserInfo();
       $.result.push(
@@ -91,7 +95,7 @@ $.info = {};
       await submitInviteId(userName);
       await $.wait(500);
       await createAssistUser();
-      
+            
     }
   }
   await showMsg();
@@ -477,6 +481,41 @@ function awardTask( taskType, taskinfo) {
     }
   });
 }
+
+//娱乐中心
+function funCenterState() {
+  return new Promise(resolve => {
+    $.get(taskUrl(`consume/FunCenterState`, `strType=1`), async(err, resp, data) => {
+      try {
+        $.log(data);
+        const {  SlotMachine: { ddwConfVersion, dwFreeCount, strCouponPool, strGoodsPool } = {}, iRet, sErrMsg } = JSON.parse(data);
+        if(dwFreeCount === 1) {
+          await $.wait(500);
+          await soltMachine(strCouponPool,strGoodsPool,ddwConfVersion);
+        }
+      } catch (e) {
+        $.logErr(e, resp);
+      } finally {
+        resolve();
+      }
+    });
+  });
+}
+
+//抽奖机
+function soltMachine(strCouponPool,strGoodsPool,ddwConfVersion) {
+  return new Promise(resolve => {
+    $.get(taskUrl(`consume/SlotMachine`,`strCouponPool=${strCouponPool}&strGoodsPool=${strGoodsPool}&ddwConfVersion=${ddwConfVersion}`), async(err, resp, data) => {
+      try {
+        const { iRet, sErrMsg, strAwardPoolName } = JSON.parse(data);
+        $.log(`\n【抽奖结果】 ${strAwardPoolName != "" ? "未中奖" : strAwardPoolName} \n${ $.showLog ? data : '' }`);
+      } catch (e) {
+        $.logErr(e, resp);
+      }
+    });
+  });
+}
+
 
 //提交互助码
 function submitInviteId(userName) {
