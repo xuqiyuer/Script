@@ -296,12 +296,8 @@ function stealMoney(strShareId, sceneId, strFriendNick, strSceneName){
 //捡地上的奖励
 async function treasureHunt() {
   const place = ["tree", "wood", "small_stone"];
-  let placeStatus = false;
   for (let i = 0; i < place.length; i++) {
-    placeStatus = await doTreasureHunt(place[i]);
-    if (placeStatus) {
-      break;
-    }
+    await doTreasureHunt(place[i]);
     await $.wait(3000);
   }
 }
