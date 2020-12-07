@@ -1,3 +1,6 @@
+// Variables used by Scriptable.
+// These must be at the very top of the file. Do not edit.
+// icon-color: deep-gray; icon-glyph: magic;
 /**
 *
     Name: 京喜财富岛
@@ -18,6 +21,12 @@
 
     BoxJS订阅
     https://raw.githubusercontent.com/whyour/hundun/master/quanx/whyour.boxjs.json
+    
+    Feature:
+      岛主寻宝大作战
+      娱乐中心
+      提现
+      超级工人
 *
 **/
 
@@ -46,6 +55,7 @@ $.info = {};
       $.log(`\n开始【京东账号${i + 1}】${userName}`);
 
       const beginInfo = await getUserInfo();
+      
       await $.wait(500);
       await querySignList();
 
@@ -57,9 +67,14 @@ $.info = {};
       await getTaskList(0);      
       await $.wait(500);
       await browserTask(0);
-
+      //寻宝
       await $.wait(500);
       await treasureHunt();
+
+      //偷财富
+      await $.wait(500);
+      await friendCircle();
+
       //成就任务
       await $.wait(500);
       await getTaskList(1);
@@ -76,7 +91,7 @@ $.info = {};
       await submitInviteId(userName);
       await $.wait(500);
       await createAssistUser();
-
+      
     }
   }
   await showMsg();
@@ -172,7 +187,6 @@ async function userSignReward(ddwMoney) {
   });
 }
 
-//GET /jxcfd/user/GetMoney?strZone=jxcfd&bizCode=jxcfd&source=jxcfd&dwEnv=7&_cfd_t=1607242368537&ptag=138631.26.55&dwSceneId=1001&strEmployeeId=B2C721D9490181CC7A971FE840D69195D99B906348D5B7AA432AC015562A331D&dwSource=2&_=1607242368540&sceneval=2&g_login_type=1&g_ty=ls
 //领取财富值
 function getMoney() {
   return new Promise(async (resolve) => {
@@ -212,6 +226,70 @@ function getMoney() {
         }
       );
     }
+  });
+}
+
+//好友圈偷财富
+function friendCircle() {
+  return new Promise(async (resolve) => {
+    $.get(taskUrl(`user/FriendCircle`, `dwPageIndex=1&dwPageSize=20`), async(err, resp, data) => {
+      try {
+        $.log(`\n好友圈列表\n${data}`);
+        const {MomentList = [],iRet,sErrMsg,strShareId} = JSON.parse(data);
+        for (moment of MomentList) {
+          if (moment.strShareId !== strShareId) {
+            await queryFriendIsland(moment.strShareId);
+            await $.wait(500);
+          }
+        }  
+      } catch (e) {
+        $.logErr(e, resp);
+      } finally {
+        resolve();
+      }
+    });
+  });
+}
+
+//获取好友信息
+function queryFriendIsland(strShareId,){
+  return new Promise(async (resolve) => {
+    $.get(taskUrl(`user/QueryFriendIsland`, `strShareId=${strShareId}&sceneval=2`), 
+      async(err, resp, data) => {
+        try {
+          $.log(`\n获取好友信息\n${data}`);
+          const {SceneList = {},dwStealMoney,sErrMsg,strFriendNick} = JSON.parse(data);
+          if (sErrMsg === "success" && dwStealMoney > 0) {
+            const sceneList = eval('(' + JSON.stringify(SceneList) + ')');
+            const sceneIds = Object.keys(SceneList);
+            for (sceneId of sceneIds) {
+              await stealMoney(strShareId,sceneId,strFriendNick,sceneList[sceneId].strSceneName);
+              await $.wait(500);
+            }
+          } 
+        } catch (e) {
+          $.logErr(e, resp);
+        } finally {
+          resolve();
+        }
+    });
+  });
+}
+
+//偷财富
+function stealMoney(strShareId, sceneId, strFriendNick, strSceneName){
+  return new Promise(async (resolve) =>{
+    $.get(taskUrl(`user/StealMoney`, `strFriendId=${strShareId}&dwSceneId=${sceneId}&sceneval=2`), async(err, resp, data) => {
+      try {
+        $.log(data);
+        const {dwGetMoney,iRet,sErrMsg} = JSON.parse(data);
+        $.log(`\n偷取好友【${strFriendNick}】【${strSceneName}】财富值：¥ ${dwGetMoney}\n${$.showLog ? data: ""}`);
+      } catch (e) {
+        $.logErr(e, resp);
+      } finally {
+        resolve();
+      }
+    });
   });
 }
 
@@ -404,9 +482,6 @@ function awardTask( taskType, taskinfo) {
   });
 }
 
-//获取宝箱任务
-//GET /jxcfd/consume/GetAdvancedBox?strZone=jxcfd&bizCode=jxcfd&source=jxcfd&dwEnv=7&_cfd_t=1606923650844&ptag=138631.26.55&_=1606923650846&sceneval=2&g_login_type=1&callback=jsonpCBKHHH&g_ty=ls HTTP/1.1
-
 //提交互助码
 function submitInviteId(userName) {
   return new Promise(resolve => {
@@ -437,14 +512,16 @@ function submitInviteId(userName) {
 }
 
 //随机助力好友
-//未修改多场景
 function createAssistUser() {
   return new Promise(resolve => {
+    const sceneList = eval('('+ JSON.stringify($.info.SceneList) +')');
+    const sceneIds = Object.keys($.info.SceneList);
+    const sceneId = Math.max(sceneIds);
     $.get({ url: 'https://api.ninesix.cc/api/jx-cfd' }, (err, resp, _data) => {
       try {
         const { data = {} } = JSON.parse(_data);
         $.log(`\n${data.value}\n${$.showLog ? _data : ''}`);
-        $.get(taskUrl('user/JoinScene', `strShareId=${escape(data.value)}&dwSceneId=1001`), (err, resp, data) => {
+        $.get(taskUrl('user/JoinScene', `strShareId=${escape(data.value)}&dwSceneId=${sceneId}`), (err, resp, data) => {
           try {
             const { sErrMsg, data: { rewardMoney = 0 } = {} } = JSON.parse(data);
             $.log(`\n助力：${sErrMsg}\n${$.showLog ? data : ''}`);
