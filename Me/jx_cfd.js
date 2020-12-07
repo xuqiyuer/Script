@@ -234,7 +234,7 @@ function friendCircle() {
   return new Promise(async (resolve) => {
     $.get(taskUrl(`user/FriendCircle`, `dwPageIndex=1&dwPageSize=20`), async(err, resp, data) => {
       try {
-        $.log(`\n好友圈列表\n${data}`);
+        //$.log(`\n好友圈列表\n${data}`);
         const {MomentList = [],iRet,sErrMsg,strShareId} = JSON.parse(data);
         for (moment of MomentList) {
           if (moment.strShareId !== strShareId) {
@@ -257,7 +257,7 @@ function queryFriendIsland(strShareId,){
     $.get(taskUrl(`user/QueryFriendIsland`, `strShareId=${strShareId}&sceneval=2`), 
       async(err, resp, data) => {
         try {
-          $.log(`\n获取好友信息\n${data}`);
+          //$.log(`\n获取好友信息\n${data}`);
           const {SceneList = {},dwStealMoney,sErrMsg,strFriendNick} = JSON.parse(data);
           if (sErrMsg === "success" && dwStealMoney > 0) {
             const sceneList = eval('(' + JSON.stringify(SceneList) + ')');
@@ -281,7 +281,7 @@ function stealMoney(strShareId, sceneId, strFriendNick, strSceneName){
   return new Promise(async (resolve) =>{
     $.get(taskUrl(`user/StealMoney`, `strFriendId=${strShareId}&dwSceneId=${sceneId}&sceneval=2`), async(err, resp, data) => {
       try {
-        $.log(data);
+        //$.log(data);
         const {dwGetMoney,iRet,sErrMsg} = JSON.parse(data);
         $.log(`\n偷取好友【${strFriendNick}】【${strSceneName}】财富值：¥ ${dwGetMoney}\n${$.showLog ? data: ""}`);
       } catch (e) {
