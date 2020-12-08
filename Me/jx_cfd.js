@@ -63,6 +63,7 @@ $.info = {};
       await getTaskList(0);      
       await $.wait(500);
       await browserTask(0);
+      
       //寻宝
       await $.wait(500);
       await treasureHunt();
@@ -108,6 +109,7 @@ function getUserInfo() {
         const {
           iret,
           SceneList = {},
+          XBStatus: { XBDetail = [], dwXBRemainCnt } = {},
           ddwMoney,
           sErrMsg,
           strMyShareId,
@@ -117,12 +119,16 @@ function getUserInfo() {
         $.info = {
           ...$.info,
           SceneList,
+          XBDetail,
+          dwXBRemainCnt,
           ddwMoney,
           strMyShareId,
           strPin,
         };
         resolve({
           SceneList,
+          XBDetail,
+          dwXBRemainCnt,
           ddwMoney,
           strMyShareId,
           strPin,
@@ -236,14 +242,19 @@ function friendCircle() {
       try {
         //$.log(`\n好友圈列表\n${data}`);
         const {MomentList = [],iRet,sErrMsg,strShareId} = JSON.parse(data);
+        const status = 0;
         for (moment of MomentList) {
           if (moment.strShareId !== strShareId) {
-            await queryFriendIsland(moment.strShareId);
-            await $.wait(500);
+            if(status == 0) {
+              status = await queryFriendIsland(moment.strShareId);
+              await $.wait(500);  
+            } else {
+              break;
+            }
           }
         }  
       } catch (e) {
-        $.logErr(e, resp);
+        //$.logErr(e, resp);
       } finally {
         resolve();
       }
@@ -263,13 +274,20 @@ function queryFriendIsland(strShareId,){
           if (sErrMsg === "success") {
             const sceneList = eval('(' + JSON.stringify(SceneList) + ')');
             const sceneIds = Object.keys(SceneList);
+            const serrMsg = "";
             for (sceneId of sceneIds) {
-              await stealMoney(strShareId,sceneId,strFriendNick,sceneList[sceneId].strSceneName);
-              await $.wait(500);
+              if(serrMsg != "每天偷钞票次数上限") {
+                serrMsg = await stealMoney(strShareId,sceneId,strFriendNick,sceneList[sceneId].strSceneName);
+                await $.wait(500);
+                resolve(0);
+              } else {
+                resolve(1);
+                break;
+              }
             }
           } 
         } catch (e) {
-          $.logErr(e, resp);
+          //$.logErr(e, resp);
         } finally {
           resolve();
         }
@@ -285,6 +303,7 @@ function stealMoney(strShareId, sceneId, strFriendNick, strSceneName){
         //$.log(data);
         const {dwGetMoney,iRet,sErrMsg} = JSON.parse(data);
         $.log(`\n偷取好友【${strFriendNick}】【${strSceneName}】财富值：¥ ${dwGetMoney ? dwGetMoney : sErrMsg}\n${$.showLog ? data: ""}`);
+        resolve(sErrMsg);
       } catch (e) {
         $.logErr(e, resp);
       } finally {
@@ -294,12 +313,19 @@ function stealMoney(strShareId, sceneId, strFriendNick, strSceneName){
   });
 }
 
-//捡地上的奖励
+//寻宝  
 async function treasureHunt() {
-  const place = ["tree", "wood", "small_stone"];
-  for (let i = 0; i < place.length; i++) {
-    await doTreasureHunt(place[i]);
-    await $.wait(3000);
+  if($.info.dwXBRemainCnt > 0) {
+    const place = ["tree", "wood", "small_stone"];
+    for (let i = 0; i < place.length; i++) {
+    //for (place of xbDetail) {
+      $.log($.info.XBDetail[i].strIndex);
+      const { strIndex } = place[i];
+      await doTreasureHunt(strIndex);
+      await $.wait(3000);
+    }
+  } else {
+    $.log(`\n寻宝：寻宝次数不足`);
   }
 }
 
