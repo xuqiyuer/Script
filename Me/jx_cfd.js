@@ -242,19 +242,14 @@ function friendCircle() {
       try {
         //$.log(`\n好友圈列表\n${data}`);
         const {MomentList = [],iRet,sErrMsg,strShareId} = JSON.parse(data);
-        const status = 0;
         for (moment of MomentList) {
-          if (moment.strShareId !== strShareId) {
-            if(status == 0) {
-              status = await queryFriendIsland(moment.strShareId);
-              await $.wait(500);  
-            } else {
-              break;
-            }
+          if (moment.strShareId !== strShareId && moment.dwAccessMoney > 0) {
+            await queryFriendIsland(moment.strShareId);
+            await $.wait(500);
           }
         }  
       } catch (e) {
-        //$.logErr(e, resp);
+        $.logErr(e, resp);
       } finally {
         resolve();
       }
@@ -270,24 +265,16 @@ function queryFriendIsland(strShareId,){
         try {
           //$.log(`\n获取好友信息\n${data}`);
           const {SceneList = {},dwStealMoney,sErrMsg,strFriendNick} = JSON.parse(data);
-          //if (sErrMsg === "success" && dwStealMoney > 0) {
           if (sErrMsg === "success") {
             const sceneList = eval('(' + JSON.stringify(SceneList) + ')');
             const sceneIds = Object.keys(SceneList);
-            const serrMsg = "";
             for (sceneId of sceneIds) {
-              if(serrMsg != "每天偷钞票次数上限") {
-                serrMsg = await stealMoney(strShareId,sceneId,strFriendNick,sceneList[sceneId].strSceneName);
-                await $.wait(500);
-                resolve(0);
-              } else {
-                resolve(1);
-                break;
-              }
+              await stealMoney(strShareId,sceneId,strFriendNick,sceneList[sceneId].strSceneName);
+              await $.wait(500);
             }
           } 
         } catch (e) {
-          //$.logErr(e, resp);
+          $.logErr(e, resp);
         } finally {
           resolve();
         }
@@ -303,7 +290,6 @@ function stealMoney(strShareId, sceneId, strFriendNick, strSceneName){
         //$.log(data);
         const {dwGetMoney,iRet,sErrMsg} = JSON.parse(data);
         $.log(`\n偷取好友【${strFriendNick}】【${strSceneName}】财富值：¥ ${dwGetMoney ? dwGetMoney : sErrMsg}\n${$.showLog ? data: ""}`);
-        resolve(sErrMsg);
       } catch (e) {
         $.logErr(e, resp);
       } finally {
