@@ -259,7 +259,8 @@ function queryFriendIsland(strShareId,){
         try {
           //$.log(`\n获取好友信息\n${data}`);
           const {SceneList = {},dwStealMoney,sErrMsg,strFriendNick} = JSON.parse(data);
-          if (sErrMsg === "success" && dwStealMoney > 0) {
+          //if (sErrMsg === "success" && dwStealMoney > 0) {
+          if (sErrMsg === "success") {
             const sceneList = eval('(' + JSON.stringify(SceneList) + ')');
             const sceneIds = Object.keys(SceneList);
             for (sceneId of sceneIds) {
@@ -283,7 +284,7 @@ function stealMoney(strShareId, sceneId, strFriendNick, strSceneName){
       try {
         //$.log(data);
         const {dwGetMoney,iRet,sErrMsg} = JSON.parse(data);
-        $.log(`\n偷取好友【${strFriendNick}】【${strSceneName}】财富值：¥ ${dwGetMoney}\n${$.showLog ? data: ""}`);
+        $.log(`\n偷取好友【${strFriendNick}】【${strSceneName}】财富值：¥ ${dwGetMoney ? dwGetMoney : sErrMsg}\n${$.showLog ? data: ""}`);
       } catch (e) {
         $.logErr(e, resp);
       } finally {
@@ -483,7 +484,7 @@ function funCenterState() {
   return new Promise(resolve => {
     $.get(taskUrl(`consume/FunCenterState`, `strType=1`), async(err, resp, data) => {
       try {
-        $.log(data);
+        //$.log(data);
         const {  SlotMachine: { ddwConfVersion, dwFreeCount, strCouponPool, strGoodsPool } = {}, iRet, sErrMsg } = JSON.parse(data);
         if(dwFreeCount == 1) {
           await $.wait(500);
