@@ -51,7 +51,7 @@ $.info = {};
       $.log(`\n开始【京东账号${i + 1}】${userName}`);
 
       const beginInfo = await getUserInfo();
-      
+            
       await $.wait(500);
       await querySignList();
 
@@ -109,7 +109,7 @@ function getUserInfo() {
         const {
           iret,
           SceneList = {},
-          XBStatus: { XBDetail = [], dwXBRemainCnt } = {},
+          XbStatus: { XBDetail = [], dwXBRemainCnt } = {},
           ddwMoney,
           sErrMsg,
           strMyShareId,
@@ -302,11 +302,9 @@ function stealMoney(strShareId, sceneId, strFriendNick, strSceneName){
 //寻宝  
 async function treasureHunt() {
   if($.info.dwXBRemainCnt > 0) {
-    const place = ["tree", "wood", "small_stone"];
-    for (let i = 0; i < place.length; i++) {
-    //for (place of xbDetail) {
-      $.log($.info.XBDetail[i].strIndex);
-      const { strIndex } = place[i];
+    const xbDetail = $.info.XBDetail;
+    for (let i = 0; i < xbDetail.length; i++) {
+      const { strIndex }= xbDetail[i];
       await doTreasureHunt(strIndex);
       await $.wait(3000);
     }
@@ -322,9 +320,9 @@ function doTreasureHunt(place) {
       async (err, resp, data) => {
         try {
           //$.log(data);
-          const { iRet, dwExperience, sErrMsg } = JSON.parse(data);
+          const { iRet, dwExpericnce, sErrMsg } = JSON.parse(data);
           $.log(
-            `\n寻宝：${sErrMsg} 获取随机奖励：¥ ${dwExperience || 0} \n${
+            `\n寻宝：${sErrMsg} 获取随机奖励：¥ ${dwExpericnce || 0} \n${
               $.showLog ? data : ""
             }`
           );
@@ -612,12 +610,10 @@ function taskUrl(function_path, body) {
       Cookie: $.currentCookie,
       Accept: "*/*",
       Connection: "keep-alive",
-      Referer:
-        "https://st.jingxi.com/fortune_island/index.html?ptag=138631.26.55",
+      Referer:"https://st.jingxi.com/fortune_island/index.html?ptag=138631.26.55",
       "Accept-Encoding": "gzip, deflate, br",
       Host: "m.jingxi.com",
-      "User-Agent":
-        "jdpingou;iPad;3.15.2;14.2;c18613cab073b19ba6d9f4e49695c585997ad5e7;network/wifi;model/iPad7,5;appBuild/100365;ADID/00000000-0000-0000-0000-000000000000;supportApplePay/1;hasUPPay/0;pushNoticeIsOpen/0;hasOCPay/0;supportBestPay/0;session/68;pap/JA2015_311210;brand/apple;supportJDSHWK/1;Mozilla/5.0 (iPad; CPU OS 14_2 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148",
+      "User-Agent":"jdpingou;iPad;3.15.2;14.2;c18613cab073b19ba6d9f4e49695c585997ad5e7;network/wifi;model/iPad7,5;appBuild/100365;ADID/00000000-0000-0000-0000-000000000000;supportApplePay/1;hasUPPay/0;pushNoticeIsOpen/0;hasOCPay/0;supportBestPay/0;session/68;pap/JA2015_311210;brand/apple;supportJDSHWK/1;Mozilla/5.0 (iPad; CPU OS 14_2 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148",
       "Accept-Language": "zh-cn",
     },
   };
@@ -630,12 +626,10 @@ function taskListUrl(function_path, body) {
       Cookie: $.currentCookie,
       Accept: "*/*",
       Connection: "keep-alive",
-      Referer:
-        "https://st.jingxi.com/fortune_island/index.html?ptag=138631.26.55",
+      Referer:"https://st.jingxi.com/fortune_island/index.html?ptag=138631.26.55",
       "Accept-Encoding": "gzip, deflate, br",
       Host: "m.jingxi.com",
-      "User-Agent":
-        "jdpingou;iPad;3.15.2;14.2;c18613cab073b19ba6d9f4e49695c585997ad5e7;network/wifi;model/iPad7,5;appBuild/100365;ADID/00000000-0000-0000-0000-000000000000;supportApplePay/1;hasUPPay/0;pushNoticeIsOpen/0;hasOCPay/0;supportBestPay/0;session/68;pap/JA2015_311210;brand/apple;supportJDSHWK/1;Mozilla/5.0 (iPad; CPU OS 14_2 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148",
+      "User-Agent":"jdpingou;iPad;3.15.2;14.2;c18613cab073b19ba6d9f4e49695c585997ad5e7;network/wifi;model/iPad7,5;appBuild/100365;ADID/00000000-0000-0000-0000-000000000000;supportApplePay/1;hasUPPay/0;pushNoticeIsOpen/0;hasOCPay/0;supportBestPay/0;session/68;pap/JA2015_311210;brand/apple;supportJDSHWK/1;Mozilla/5.0 (iPad; CPU OS 14_2 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148",
       "Accept-Language": "zh-cn",
     },
   };
