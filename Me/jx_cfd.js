@@ -6,7 +6,9 @@
       whyour大佬
       TG: https://t.me/joinchat/O1WgnBbM18YjQQVFQ_D86w
       GitHub: https://github.com/whyour
-
+      
+      新用户签到问题反馈者：https://github.com/NanjolnoRing
+      
     Quantumult X:
     [task_local]
     0 * * * * https://raw.githubusercontent.com/MoPoQAQ/Script/main/Me/jx_cfd.js, tag=京喜财富岛, img-url=https://raw.githubusercontent.com/58xinian/icon/master/jxcfd.png, enabled=true
@@ -22,7 +24,6 @@
     Feature:
       岛主寻宝大作战
       超级工人
-      提现      
 *
 **/
 
