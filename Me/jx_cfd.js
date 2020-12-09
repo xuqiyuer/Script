@@ -147,7 +147,7 @@ function querySignList() {
   return new Promise(async (resolve) => {
     $.get(taskUrl(`task/QuerySignListV2`), async (err, resp, data) => {
       try {
-        const { iRet, sData: { Sign = [] } = {}, sErrMsg } = JSON.parse(data);
+        const { iRet, sData: { Sign = [], dwUserFlag } = {}, sErrMsg } = JSON.parse(data);
         $.log(
           `\n签到列表：${sErrMsg}\n${
             $.showLog ? data : ""
@@ -155,7 +155,7 @@ function querySignList() {
         );
         const nextSign = Sign.filter(x => x.dwStatus === 0)[0];
         if (nextSign && nextSign.ddwMoney) {
-          await userSignReward(nextSign.ddwMoney);
+          await userSignReward(nextSign.dwUserFlag, nextSign.ddwMoney);
         }
       } catch (e) {
         $.logErr(e, resp);
@@ -167,12 +167,12 @@ function querySignList() {
 }
 
 //签到
-async function userSignReward(ddwMoney) {
+async function userSignReward(dwUserFlag,ddwMoney) {
   return new Promise(async (resolve) => {
     $.get(
       taskUrl(
         `task/UserSignRewardV2`,
-        `dwReqUserFlag=1&ddwMoney=${ddwMoney}`
+        `dwReqUserFlag=${dwUserFlag}&ddwMoney=${ddwMoney}`
       ),
       async (err, resp, data) => {
         try {
