@@ -2,6 +2,7 @@
 *
     Name: 京喜财富岛
     Add: 京喜App==>>全民赚大钱
+    Update: 2020/12/10 8:38
     Thanks:
       whyour大佬
       TG: https://t.me/joinchat/O1WgnBbM18YjQQVFQ_D86w
@@ -156,7 +157,7 @@ function querySignList() {
         );
         const nextSign = Sign.filter(x => x.dwStatus === 0)[0];
         if (nextSign && nextSign.ddwMoney) {
-          await userSignReward(nextSign.dwUserFlag, nextSign.ddwMoney);
+          await userSignReward(dwUserFlag, nextSign.ddwMoney);
         }
       } catch (e) {
         $.logErr(e, resp);
