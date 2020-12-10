@@ -2,7 +2,7 @@
 *
     Name: 京喜财富岛
     Add: 京喜App==>>全民赚大钱
-    Update: 2020/12/10 8:38
+    Update: 2020/12/10 9:15
     Thanks:
       whyour大佬
       TG: https://t.me/joinchat/O1WgnBbM18YjQQVFQ_D86w
@@ -155,9 +155,11 @@ function querySignList() {
             $.showLog ? data : ""
           }`
         );
-        const nextSign = Sign.filter(x => x.dwStatus === 0)[0];
-        if (nextSign && nextSign.ddwMoney) {
+        const nextSign = Sign.filter(x => x.dwShowFlag === 1);
+        if (nextSign.dwStatus === 0 && nextSign.ddwMoney) {
           await userSignReward(dwUserFlag, nextSign.ddwMoney);
+        } else {
+          $.log(`\n签到：你今日已签到过啦，请明天再来}`);
         }
       } catch (e) {
         $.logErr(e, resp);
@@ -179,9 +181,9 @@ async function userSignReward(dwUserFlag,ddwMoney) {
       async (err, resp, data) => {
         try {
           //$.log(data)
-          const { iRet, sData, sErrMsg } = JSON.parse(data);
+          const { iRet, sData: { ddwMoney }, sErrMsg } = JSON.parse(data);
           $.log(
-            `\n签到：${sErrMsg}，获得财富 ¥ ${sData.dwMoney || 0}\n${
+            `\n签到：${sErrMsg}，获得财富 ¥ ${ddwMoney || 0}\n${
               $.showLog ? data : ""
             }`
           );
@@ -306,9 +308,13 @@ async function treasureHunt() {
   if($.info.dwXBRemainCnt > 0) {
     const xbDetail = $.info.XBDetail;
     for (let i = 0; i < xbDetail.length; i++) {
-      const { strIndex }= xbDetail[i];
-      await doTreasureHunt(strIndex);
-      await $.wait(3000);
+      const { ddwColdEndTm, strIndex }= xbDetail[i];
+      if( Date.now() > ddwColdEndTm ) {
+        await doTreasureHunt(strIndex);
+        await $.wait(3000);
+      } else {
+        $.log(`\n寻宝：宝藏冷却中。。。。`);
+      }
     }
   } else {
     $.log(`\n寻宝：寻宝次数不足`);
@@ -324,7 +330,7 @@ function doTreasureHunt(place) {
           //$.log(data);
           const { iRet, dwExpericnce, sErrMsg } = JSON.parse(data);
           $.log(
-            `\n寻宝：${sErrMsg} 获取随机奖励：¥ ${dwExpericnce || 0} \n${
+            `\n【${place}】寻宝：${sErrMsg} 获取随机奖励：¥ ${dwExpericnce || 0} \n${
               $.showLog ? data : ""
             }`
           );
