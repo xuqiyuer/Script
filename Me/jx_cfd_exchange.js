@@ -4,12 +4,12 @@
   Update: 2020/12/10 17:00
   
   Quantumult X:
-    [task_local]
+  [task_local]
     30 6,12,22 * * * https://raw.githubusercontent.com/MoPoQAQ/Script/main/Me/jx_cfd_exchange.js, tag=京喜财富岛兑换提醒, img-url=https://raw.githubusercontent.com/58xinian/icon/master/jxcfd.png, enabled=true
-    Loon:
-    [Script]
+  Loon:
+  [Script]
     cron "30 6,12,22 * * *" script-path=https://raw.githubusercontent.com/MoPoQAQ/Script/main/Me/jx_cfd.js,tag=京喜财富岛兑换提醒
-    Surge:
+  Surge:
     京喜财富岛兑换提醒 = type=cron,cronexp="30 6,12,22 * * *",wake-system=1,timeout=20,script-path=https://raw.githubusercontent.com/MoPoQAQ/Script/main/Me/jx_cfd.js
 *
 **/
