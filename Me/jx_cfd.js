@@ -2,7 +2,7 @@
 *
     Name: 京喜财富岛
     Add: 京喜App==>>全民赚大钱
-    Update: 2020/12/10 9:40
+    Update: 2020/12/11 8:16
     Thanks:
       whyour大佬
       TG: https://t.me/joinchat/O1WgnBbM18YjQQVFQ_D86w
@@ -113,6 +113,7 @@ function getUserInfo() {
           SceneList = {},
           XbStatus: { XBDetail = [], dwXBRemainCnt } = {},
           ddwMoney,
+          dwIsNewUser,
           sErrMsg,
           strMyShareId,
           strPin,
@@ -124,6 +125,7 @@ function getUserInfo() {
           XBDetail,
           dwXBRemainCnt,
           ddwMoney,
+          dwIsNewUser,
           strMyShareId,
           strPin,
         };
@@ -132,6 +134,7 @@ function getUserInfo() {
           XBDetail,
           dwXBRemainCnt,
           ddwMoney,
+          dwIsNewUser,
           strMyShareId,
           strPin,
         });
@@ -149,15 +152,15 @@ function querySignList() {
   return new Promise(async (resolve) => {
     $.get(taskUrl(`task/QuerySignListV2`), async (err, resp, data) => {
       try {
-        const { iRet, sData: { Sign = [], dwUserFlag } = {}, sErrMsg } = JSON.parse(data);
+        const { iRet, sData: { Sign = [{}], dwUserFlag }, sErrMsg } = JSON.parse(data);
         $.log(
           `\n签到列表：${sErrMsg}\n${
             $.showLog ? data : ""
           }`
         );
-        const nextSign = Sign.filter(x => x.dwShowFlag === 1);
-        if (nextSign.dwStatus === 0 && nextSign.ddwMoney) {
-          await userSignReward(dwUserFlag, nextSign.ddwMoney);
+        const [{ dwStatus, ddwMoney }] = Sign.filter(x => x.dwShowFlag === 1);
+        if (dwStatus === 0) {
+          await userSignReward(dwUserFlag, ddwMoney);
         } else {
           $.log(`\n签到：你今日已签到过啦，请明天再来`);
         }
@@ -621,7 +624,7 @@ function taskUrl(function_path, body) {
       Referer:"https://st.jingxi.com/fortune_island/index.html?ptag=138631.26.55",
       "Accept-Encoding": "gzip, deflate, br",
       Host: "m.jingxi.com",
-      "User-Agent":"jdpingou;iPad;3.15.2;14.2;c18613cab073b19ba6d9f4e49695c585997ad5e7;network/wifi;model/iPad7,5;appBuild/100365;ADID/00000000-0000-0000-0000-000000000000;supportApplePay/1;hasUPPay/0;pushNoticeIsOpen/0;hasOCPay/0;supportBestPay/0;session/68;pap/JA2015_311210;brand/apple;supportJDSHWK/1;Mozilla/5.0 (iPad; CPU OS 14_2 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148",
+      "User-Agent":`jdpingou;iPhone;3.15.2;14.2.1;ea00763447803eb0f32045dcba629c248ea53bb3;network/wifi;model/iPhone13,2;appBuild/100365;ADID/00000000-0000-0000-0000-000000000000;supportApplePay/1;hasUPPay/0;pushNoticeIsOpen/0;hasOCPay/0;supportBestPay/0;session/${Math.random * 98 + 1};pap/JA2015_311210;brand/apple;supportJDSHWK/1;Mozilla/5.0 (iPhone; CPU iPhone OS 14_2_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148`,
       "Accept-Language": "zh-cn",
     },
   };
@@ -637,7 +640,7 @@ function taskListUrl(function_path, body) {
       Referer:"https://st.jingxi.com/fortune_island/index.html?ptag=138631.26.55",
       "Accept-Encoding": "gzip, deflate, br",
       Host: "m.jingxi.com",
-      "User-Agent":"jdpingou;iPad;3.15.2;14.2;c18613cab073b19ba6d9f4e49695c585997ad5e7;network/wifi;model/iPad7,5;appBuild/100365;ADID/00000000-0000-0000-0000-000000000000;supportApplePay/1;hasUPPay/0;pushNoticeIsOpen/0;hasOCPay/0;supportBestPay/0;session/68;pap/JA2015_311210;brand/apple;supportJDSHWK/1;Mozilla/5.0 (iPad; CPU OS 14_2 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148",
+      "User-Agent":`jdpingou;iPhone;3.15.2;14.2.1;ea00763447803eb0f32045dcba629c248ea53bb3;network/wifi;model/iPhone13,2;appBuild/100365;ADID/00000000-0000-0000-0000-000000000000;supportApplePay/1;hasUPPay/0;pushNoticeIsOpen/0;hasOCPay/0;supportBestPay/0;session/${Math.random * 98 + 1};pap/JA2015_311210;brand/apple;supportJDSHWK/1;Mozilla/5.0 (iPhone; CPU iPhone OS 14_2_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148`,
       "Accept-Language": "zh-cn",
     },
   };
