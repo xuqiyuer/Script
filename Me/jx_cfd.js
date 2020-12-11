@@ -2,35 +2,46 @@
 *
     Name: 京喜财富岛
     Add: 京喜App==>>全民赚大钱
-    Update: 2020/12/11 8:16
+    Update: 2020/12/11 16:36
     Thanks:
       whyour大佬
       TG: https://t.me/joinchat/O1WgnBbM18YjQQVFQ_D86w
       GitHub: https://github.com/whyour
       
       新用户签到问题反馈者：https://github.com/NanjolnoRing
+    
+    获取Token方式：
+      打开京喜农场，手动完成工厂任务或者签到任务，或者金牌厂长任务，提示获取cookie成功，然后退出跑任务脚本
+    
+    hostname = wq.jd.com
       
     Quantumult X:
     [task_local]
     0 * * * * https://raw.githubusercontent.com/MoPoQAQ/Script/main/Me/jx_cfd.js, tag=京喜财富岛, img-url=https://raw.githubusercontent.com/58xinian/icon/master/jxcfd.png, enabled=true
+    [rewrite_local]
+    ^https\:\/\/wq\.jd\.com\/cubeactive\/farm\/dotask url script-request-header https://raw.githubusercontent.com/whyour/hundun/master/quanx/jx_nc.cookie.js
+
     Loon:
     [Script]
+    http-request ^https\:\/\/wq\.jd\.com\/cubeactive\/farm\/dotask script-path=https://raw.githubusercontent.com/whyour/hundun/master/quanx/jx_nc.cookie.js, requires-body=false, timeout=10, tag=京喜农场cookie
     cron "0 * * * *" script-path=https://raw.githubusercontent.com/MoPoQAQ/Script/main/Me/jx_cfd.js,tag=京喜财富岛
+    
     Surge:
     京喜财富岛 = type=cron,cronexp="0 * * * *",wake-system=1,timeout=20,script-path=https://raw.githubusercontent.com/MoPoQAQ/Script/main/Me/jx_cfd.js
+    京喜农场cookie = type=http-request,pattern=^https\:\/\/wq\.jd\.com\/cubeactive\/farm\/dotask,requires-body=0,max-size=0,script-path=https://raw.githubusercontent.com/whyour/hundun/master/quanx/jx_nc.cookie.js
 
     BoxJS订阅
     https://raw.githubusercontent.com/whyour/hundun/master/quanx/whyour.boxjs.json
     
     Feature:
       岛主寻宝大作战
-      超级工人
 *
 **/
 
 const $ = new Env("京喜财富岛");
 const JD_API_HOST = "https://m.jingxi.com/";
 const jdCookieNode = $.isNode() ? require("./jdCookie.js") : "";
+$.tokens = [$.getdata('jxnc_token1') || '{}', $.getdata('jxnc_token2') || '{}'];
 $.showLog = $.getdata("cfd_showLog")
   ? $.getdata("cfd_showLog") === "true"
   : false;
@@ -38,6 +49,7 @@ $.notifyTime = $.getdata("cfd_notifyTime");
 $.result = [];
 $.cookieArr = [];
 $.currentCookie = '';
+$.currentToken = {};
 $.allTask = [];
 $.info = {};
 
@@ -45,10 +57,10 @@ $.info = {};
   if (!getCookies()) return;
   for (let i = 0; i < $.cookieArr.length; i++) {
     $.currentCookie = $.cookieArr[i];
+    $.currentToken = JSON.parse($.tokens[i]);
     if ($.currentCookie) {
       const userName = decodeURIComponent(
-        $.currentCookie.match(/pt_pin=(.+?);/) &&
-          $.currentCookie.match(/pt_pin=(.+?);/)[1]
+        $.currentCookie.match(/pt_pin=(.+?);/) && $.currentCookie.match(/pt_pin=(.+?);/)[1],
       );
       $.log(`\n开始【京东账号${i + 1}】${userName}`);
 
@@ -86,12 +98,17 @@ $.info = {};
 
       const endInfo = await getUserInfo();
       $.result.push(
-        `任务前💸：${beginInfo.ddwMoney} 任务后💸：${endInfo.ddwMoney}`,
+        `任务前💸：${beginInfo.ddwMoney}\n任务后💸：${endInfo.ddwMoney}`,
         `获得💸：${endInfo.ddwMoney - beginInfo.ddwMoney}`
       );
-
+      
+      //提交邀请码
       await $.wait(500);
       await submitInviteId(userName);
+      //超级助力
+      await $.wait(500);
+      await createSuperAssistUser();
+      //普通助力
       await $.wait(500);
       await createAssistUser();
             
@@ -107,7 +124,6 @@ function getUserInfo() {
   return new Promise((resolve) => {
     $.get(taskUrl(`user/QueryUserInfo`), async (err, resp, data) => {
       try {
-        //$.log(data);
         const {
           iret,
           SceneList = {},
@@ -536,8 +552,6 @@ function soltMachine(strCouponPool,strGoodsPool,ddwConfVersion) {
   });
 }
 
-//https://m.jingxi.com/jxcfd/user/JoinGroup?strZone=jxcfd&bizCode=jxcfd&source=jxcfd&dwEnv=7&_cfd_t=1606569804707&ptag=139022.1.2&strGroupId=Jxcfd_GroupId_112_13709488&dwIsNewUser=0&pgtimestamp=1606569804704&phoneID=d38acd424c2f874c87a86460f6eb48901ad23860&pgUUNum=ae9876f4f73953b060946f54e13586e1&_=1606569804707&sceneval=2&g_login_type=1&callback=jsonpCBKE&g_ty=ls
-
 //提交互助码
 function submitInviteId(userName) {
   return new Promise(resolve => {
@@ -564,6 +578,33 @@ function submitInviteId(userName) {
         }
       },
     );
+  });
+}
+
+//随机超级助力好友
+function createSuperAssistUser() {
+  return new Promise(resolve => {
+    const sceneList = eval('('+ JSON.stringify($.info.SceneList) +')');
+    const sceneIds = Object.keys($.info.SceneList);
+    const sceneId = Math.max(sceneIds);
+    $.get({ url: 'https://api.ninesix.cc/api/jx-cfd' }, (err, resp, _data) => {
+      try {
+        const { data = {} } = JSON.parse(_data);
+        $.log(`\n${data.value}\n${$.showLog ? _data : ''}`);        
+        $.get(taskUrl('user/JoinScene', `strPgtimestamp${$.currentToken['timestamp']}&strPhoneID=${$.currentToken['phoneid']}&strPgUUNum=${$.currentToken['farm_jstoken']}&strShareId=${escape(data.value)}&dwSceneId=${sceneId}&dwType=2`), (err, resp, data) => {
+          try {
+            const { sErrMsg, data: { rewardMoney = 0 } = {} } = JSON.parse(data);
+            $.log(`\n超级助力：${sErrMsg}\n${$.showLog ? data : ''}`);
+          } catch (e) {
+            $.logErr(e, resp);
+          } finally {
+            resolve();
+          }
+        });
+      } catch (e) {
+        $.logErr(e, resp);
+      }
+    });
   });
 }
 
