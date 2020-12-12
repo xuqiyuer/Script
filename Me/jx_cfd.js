@@ -95,8 +95,8 @@ $.info = {};
 
       const endInfo = await getUserInfo();
       $.result.push(
-        `任务前💸：${beginInfo.ddwMoney}\n任务后💸：${endInfo.ddwMoney}`,
-        `获得💸：${endInfo.ddwMoney - beginInfo.ddwMoney}`
+        `【💵财富值】任务前: ${beginInfo.ddwMoney}\n【💵财富值】任务后: ${endInfo.ddwMoney}`,
+        `【💵财富值】净增值: ${endInfo.ddwMoney - beginInfo.ddwMoney}`
       );
       
       //提交邀请码
@@ -571,7 +571,7 @@ function submitInviteId(userName) {
           const { data = {}, code } = JSON.parse(_data);
           $.log(`\n邀请码提交：${code}\n${$.showLog ? _data : ''}`);
           if (data.value) {
-            $.result.push('邀请码提交成功！');
+            $.result.push('【🏖岛主】邀请码提交成功！');
           }
         } catch (e) {
           $.logErr(e, resp);
@@ -705,7 +705,7 @@ function joinGroup() {
       try {
         const { data = {} } = JSON.parse(_data);
         $.log(`\n${data.value}\n${$.showLog ? _data : ''}`);
-        $.get(taskUrl(`user/JoinGroup`, `strGroupId=Jxcfd_GroupId_126_17838366&dwIsNewUser=${$.info.dwIsNewUser}&pgtimestamp=${Date.now()}&phoneID=${$.currentToken['phoneid']}&pgUUNum=${$.currentToken['farm_jstoken']}`), (err, resp, data) => {
+        $.get(taskUrl(`user/JoinGroup`, `strGroupId=${data.value}&dwIsNewUser=${$.info.dwIsNewUser}&pgtimestamp=${Date.now()}&phoneID=${$.currentToken['phoneid']}&pgUUNum=${$.currentToken['farm_jstoken']}`), (err, resp, data) => {
           try {
             const { sErrMsg } = JSON.parse(data);
             $.log(`\n【🏝寻宝大作战】助力：${sErrMsg}\n${$.showLog ? data : ''}`);
