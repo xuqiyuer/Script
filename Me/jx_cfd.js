@@ -642,7 +642,7 @@ function submitGroupId() {
   return new Promise(resolve => {
     $.get(taskUrl(`user/GatherForture`), async (err, resp, g_data) => {
       try {
-        $.log(g_data);
+        //$.log(g_data);
         const { GroupInfo:{ strGroupId }, strPin } = JSON.parse(g_data);
         if( !strGroupId ) {
           const status = await openGroup();
@@ -654,6 +654,7 @@ function submitGroupId() {
           }
         }
         $.log('你的【🏝寻宝大作战】互助码: ' + strGroupId);
+/**
         $.post(
           {
             url: `https://api.ninesix.cc/api/jx-cfd-group/${strGroupId}/${encodeURIComponent(strPin)}`,
@@ -672,6 +673,7 @@ function submitGroupId() {
             }
           },
         );
+**/
       } catch (e) {
         $.logErr(e, resp);
       } finally {
