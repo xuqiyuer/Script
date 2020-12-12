@@ -591,7 +591,7 @@ function createSuperAssistUser() {
       try {
         const { data = {} } = JSON.parse(_data);
         $.log(`\n${data.value}\n${$.showLog ? _data : ''}`);        
-        $.get(taskUrl('user/JoinScene', `strPgtimestamp${$.currentToken['timestamp']}&strPhoneID=${$.currentToken['phoneid']}&strPgUUNum=${$.currentToken['farm_jstoken']}&strShareId=${escape(data.value)}&dwSceneId=${sceneId}&dwType=2`), (err, resp, data) => {
+        $.get(taskUrl('user/JoinScene', `strPgtimestamp=${$.currentToken['timestamp']}&strPhoneID=${$.currentToken['phoneid']}&strPgUUNum=${$.currentToken['farm_jstoken']}&strShareId=${escape(data.value)}&dwSceneId=${sceneId}&dwType=2`), (err, resp, data) => {
           try {
             const { sErrMsg, data: { rewardMoney = 0 } = {} } = JSON.parse(data);
             $.log(`\n超级助力：${sErrMsg}\n${$.showLog ? data : ''}`);
