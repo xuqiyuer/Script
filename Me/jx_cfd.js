@@ -654,7 +654,6 @@ function submitGroupId() {
           }
         }
         $.log('你的【🏝寻宝大作战】互助码: ' + strGroupId);
-/**
         $.post(
           {
             url: `https://api.ninesix.cc/api/jx-cfd-group/${strGroupId}/${encodeURIComponent(strPin)}`,
@@ -673,7 +672,6 @@ function submitGroupId() {
             }
           },
         );
-**/
       } catch (e) {
         $.logErr(e, resp);
       } finally {
@@ -703,7 +701,7 @@ function openGroup() {
 //助力好友寻宝大作战
 function joinGroup() {
   return new Promise( async (resolve) => {
-    //$.get({ url: 'https://api.ninesix.cc/api/jx-cfd-group' }, (err, resp, _data) => {
+    $.get({ url: 'https://api.ninesix.cc/api/jx-cfd-group' }, (err, resp, _data) => {
       try {
         const { data = {} } = JSON.parse(_data);
         $.log(`\n${data.value}\n${$.showLog ? _data : ''}`);
@@ -721,7 +719,7 @@ function joinGroup() {
         $.logErr(e, resp);
       }
     });
-  //});
+  });
 }
 
 function getCookies() {
