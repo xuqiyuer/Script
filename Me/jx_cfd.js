@@ -1,8 +1,8 @@
 /**
 *
     Name: 京喜财富岛
-    Add: 京喜App==>>全民赚大钱
-    Update: 2020/12/12 17:00
+    Address: 京喜App ====>>>> 全民赚大钱
+    Update: 2020/12/12 23:00
     Thanks:
       whyour大佬
       TG: https://t.me/joinchat/O1WgnBbM18YjQQVFQ_D86w
@@ -11,7 +11,9 @@
       新用户签到问题反馈者：https://github.com/NanjolnoRing
     
     获取Token方式：
-      打开京喜农场，手动完成工厂任务或者签到任务，或者金牌厂长任务，提示获取cookie成功，然后退出跑任务脚本
+      打开【❗️京喜农场❗️】，手动任意完成<工厂任务>、<签到任务>、<金牌厂长任务>一项，提示获取cookie成功即可，然后退出跑任务脚本
+    
+    ❗️❗️❗️寻宝报错声明: 出现app内助力错误，使用上述方式获取Token再试
     
     hostname = wq.jd.com
       
@@ -698,6 +700,8 @@ function openGroup() {
   });
 }
 
+//GET /jxcfd/user/JoinGroup?strZone=jxcfd&bizCode=jxcfd&source=jxcfd&dwEnv=7&_cfd_t=1607761523592&ptag=139045.1.2&strGroupId=Jxcfd_GroupId_126_1099529564598&dwIsNewUser=0&pgtimestamp=1607761523573&phoneID=c18613cab073b19ba6d9f4e49695c585997ad5e7&pgUUNum=4d650e8903ba1977a135100932d69c9a&_stk=_cfd_t%2CbizCode%2CdwEnv%2CdwIsNewUser%2CpgUUNum%2Cpgtimestamp%2CphoneID%2Cptag%2Csource%2CstrGroupId%2CstrZone&_ste=1&h5st=20201212162523592%3B8183163432738160%3B10009%3Btk01w930b1b41a8neHNMenRDSlhSCbRB7G7oajFDbBJVWgoTwCD%2B5eVx7y1NYJ6RT0M5rh%2BgKHk0FWo1QBcklgZb6M5p%3B3014257a08f20ffa9778756807623abd6406beef29b1ae5ae849557d13eb95a4&_=1607761523594&sceneval=2&g_login_type=1&callback=jsonpCBKG&g_ty=ls HTTP/1.1
+
 //助力好友寻宝大作战
 function joinGroup() {
   return new Promise( async (resolve) => {
@@ -705,7 +709,7 @@ function joinGroup() {
       try {
         const { data = {} } = JSON.parse(_data);
         $.log(`\n${data.value}\n${$.showLog ? _data : ''}`);
-        $.get(taskUrl(`user/JoinGroup`, `strGroupId=${data.value}&dwIsNewUser=${$.info.dwIsNewUser}&pgtimestamp=${Date.now()}&phoneID=${$.currentToken['phoneid']}&pgUUNum=${$.currentToken['farm_jstoken']}`), (err, resp, data) => {
+        $.get(taskUrl(`user/JoinGroup`, `strGroupId=${data.value}&dwIsNewUser=${$.info.dwIsNewUser}&pgtimestamp=${$.currentToken['timestamp']}&phoneID=${$.currentToken['phoneid']}&pgUUNum=${$.currentToken['farm_jstoken']}`), (err, resp, data) => {
           try {
             const { sErrMsg } = JSON.parse(data);
             $.log(`\n【🏝寻宝大作战】助力：${sErrMsg}\n${$.showLog ? data : ''}`);
