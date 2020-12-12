@@ -2,7 +2,7 @@
 *
     Name: 京喜财富岛
     Add: 京喜App==>>全民赚大钱
-    Update: 2020/12/11 16:36
+    Update: 2020/12/12 16:46
     Thanks:
       whyour大佬
       TG: https://t.me/joinchat/O1WgnBbM18YjQQVFQ_D86w
@@ -32,9 +32,6 @@
 
     BoxJS订阅
     https://raw.githubusercontent.com/whyour/hundun/master/quanx/whyour.boxjs.json
-    
-    Feature:
-      岛主寻宝大作战
 *
 **/
 
@@ -65,7 +62,7 @@ $.info = {};
       $.log(`\n开始【京东账号${i + 1}】${userName}`);
 
       const beginInfo = await getUserInfo();
-            
+         
       await $.wait(500);
       await querySignList();
 
@@ -111,7 +108,12 @@ $.info = {};
       //普通助力
       await $.wait(500);
       await createAssistUser();
-            
+
+      //出岛寻宝大作战
+      await $.wait(500);
+      await submitGroupId();
+      await $.wait(500);
+      await joinGroup();
     }
   }
   await showMsg();
@@ -633,6 +635,91 @@ function createAssistUser() {
       }
     });
   });
+}
+
+//提交互助码
+function submitGroupId() {
+  return new Promise(resolve => {
+    $.get(taskUrl(`user/GatherForture`), async (err, resp, g_data) => {
+      try {
+        $.log(g_data);
+        const { GroupInfo:{ strGroupId }, strPin } = JSON.parse(g_data);
+        if( !strGroupId ) {
+          const status = await openGroup();
+          if(status === 0) {
+            await submitGroupId();
+          } else {
+            resolve();
+            return;
+          }
+        }
+        $.log('你的【🏝寻宝大作战】互助码: ' + strGroupId);
+        $.post(
+          {
+            url: `https://api.ninesix.cc/api/jx-cfd-group/${strGroupId}/${encodeURIComponent(strPin)}`,
+          },
+          async (err, resp, _data) => {
+            try {
+              const { data = {}, code } = JSON.parse(_data);
+              $.log(`\n【🏝寻宝大作战】邀请码提交：${code}\n${$.showLog ? _data : ''}`);
+              if (data.value) {
+                $.result.push('【🏝寻宝大作战】邀请码提交成功！');
+              }
+            } catch (e) {
+              $.logErr(e, resp);
+            } finally {
+              resolve();
+            }
+          },
+        );
+      } catch (e) {
+        $.logErr(e, resp);
+      } finally {
+        resolve();
+      }
+    });
+  });
+}
+
+//开启寻宝大作战
+function openGroup() {
+  return new Promise( async (resolve) => {
+    $.get(taskUrl(`user/OpenGroup`, `dwIsNewUser=${$.info.dwIsNewUser}`), async (err, resp, data) => {
+      try {
+        const { sErrMsg } = JSON.parse(data);
+        $.log(`\n【🏝寻宝大作战】${sErrMsg}\n${$.showLog ? data : ''}`);
+        resolve(0);
+      } catch (e) {
+        $.logErr(e, resp);
+      } finally {
+        resolve();
+      }
+    });
+  });
+}
+
+//助力好友寻宝大作战
+function joinGroup() {
+  return new Promise( async (resolve) => {
+    //$.get({ url: 'https://api.ninesix.cc/api/jx-cfd-group' }, (err, resp, _data) => {
+      try {
+        const { data = {} } = JSON.parse(_data);
+        $.log(`\n${data.value}\n${$.showLog ? _data : ''}`);
+        $.get(taskUrl(`user/JoinGroup`, `strGroupId=Jxcfd_GroupId_126_17838366&dwIsNewUser=${$.info.dwIsNewUser}&pgtimestamp=${Date.now()}&phoneID=${$.currentToken['phoneid']}&pgUUNum=${$.currentToken['farm_jstoken']}`), (err, resp, data) => {
+          try {
+            const { sErrMsg } = JSON.parse(data);
+            $.log(`\n【🏝寻宝大作战】助力：${sErrMsg}\n${$.showLog ? data : ''}`);
+          } catch (e) {
+            $.logErr(e, resp);
+          } finally {
+            resolve();
+          }
+        });
+      } catch (e) {
+        $.logErr(e, resp);
+      }
+    });
+  //});
 }
 
 function getCookies() {
