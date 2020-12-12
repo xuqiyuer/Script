@@ -2,7 +2,7 @@
 *
     Name: 京喜财富岛
     Address: 京喜App ====>>>> 全民赚大钱
-    Update: 2020/12/12 23:00
+    Update: 2020/12/13 8:00
     Thanks:
       whyour大佬
       TG: https://t.me/joinchat/O1WgnBbM18YjQQVFQ_D86w
@@ -332,7 +332,8 @@ async function treasureHunt() {
     const xbDetail = $.info.XBDetail;
     for (let i = 0; i < xbDetail.length; i++) {
       const { ddwColdEndTm, strIndex }= xbDetail[i];
-      if( Date.now() > ddwColdEndTm ) {
+      const currentTm = Math.round(new Date() / 1000);
+      if( currentTm > ddwColdEndTm ) {
         await doTreasureHunt(strIndex);
         await $.wait(3000);
       } else {
