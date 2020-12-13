@@ -587,7 +587,7 @@ function createSuperAssistUser() {
   return new Promise(resolve => {
     const sceneList = eval('('+ JSON.stringify($.info.SceneList) +')');
     const sceneIds = Object.keys($.info.SceneList);
-    const sceneId = Math.max(sceneIds);
+    const sceneId = Math.min(sceneIds);
     $.get({ url: 'https://api.ninesix.cc/api/jx-cfd' }, (err, resp, _data) => {
       try {
         const { data = {} } = JSON.parse(_data);
