@@ -41,9 +41,7 @@ const $ = new Env("京喜财富岛");
 const JD_API_HOST = "https://m.jingxi.com/";
 const jdCookieNode = $.isNode() ? require("./jdCookie.js") : "";
 $.tokens = [$.getdata('jxnc_token1') || '{}', $.getdata('jxnc_token2') || '{}'];
-$.showLog = $.getdata("cfd_showLog")
-  ? $.getdata("cfd_showLog") === "true"
-  : false;
+$.showLog = $.getdata("cfd_showLog") ? $.getdata("cfd_showLog") === "true" : false;
 $.notifyTime = $.getdata("cfd_notifyTime");
 $.result = [];
 $.cookieArr = [];
@@ -58,9 +56,7 @@ $.info = {};
     $.currentCookie = $.cookieArr[i];
     $.currentToken = JSON.parse($.tokens[i]);
     if ($.currentCookie) {
-      const userName = decodeURIComponent(
-        $.currentCookie.match(/pt_pin=(.+?);/) && $.currentCookie.match(/pt_pin=(.+?);/)[1],
-      );
+      const userName = decodeURIComponent($.currentCookie.match(/pt_pin=(.+?);/) && $.currentCookie.match(/pt_pin=(.+?);/)[1]);
       $.log(`\n开始【京东账号${i + 1}】${userName}`);
 
       const beginInfo = await getUserInfo();
@@ -645,9 +641,8 @@ function submitGroupId() {
   return new Promise(resolve => {
     $.get(taskUrl(`user/GatherForture`), async (err, resp, g_data) => {
       try {
-        //$.log(g_data);
         const { GroupInfo:{ strGroupId }, strPin } = JSON.parse(g_data);
-        if( !strGroupId ) {
+        if(!strGroupId) {
           const status = await openGroup();
           if(status === 0) {
             await submitGroupId();
@@ -655,26 +650,25 @@ function submitGroupId() {
             resolve();
             return;
           }
+        } else {
+        	$.log('你的【🏝寻宝大作战】互助码: ' + strGroupId);
+        	$.post(
+						{url: `https://api.ninesix.cc/api/jx-cfd-group/${strGroupId}/${encodeURIComponent(strPin)}`},
+          	async (err, resp, _data) => {
+            	try {
+              	const { data = {}, code } = JSON.parse(_data);
+              	$.log(`\n【🏝寻宝大作战】邀请码提交：${code}\n${$.showLog ? _data : ''}`);
+              	if (data.value) {
+                	$.result.push('【🏝寻宝大作战】邀请码提交成功！');
+              	}
+            	} catch (e) {
+              	$.logErr(e, resp);
+            	} finally {
+              	resolve();
+            	}
+          	}
+					);
         }
-        $.log('你的【🏝寻宝大作战】互助码: ' + strGroupId);
-        $.post(
-          {
-            url: `https://api.ninesix.cc/api/jx-cfd-group/${strGroupId}/${encodeURIComponent(strPin)}`,
-          },
-          async (err, resp, _data) => {
-            try {
-              const { data = {}, code } = JSON.parse(_data);
-              $.log(`\n【🏝寻宝大作战】邀请码提交：${code}\n${$.showLog ? _data : ''}`);
-              if (data.value) {
-                $.result.push('【🏝寻宝大作战】邀请码提交成功！');
-              }
-            } catch (e) {
-              $.logErr(e, resp);
-            } finally {
-              resolve();
-            }
-          },
-        );
       } catch (e) {
         $.logErr(e, resp);
       } finally {
@@ -700,8 +694,6 @@ function openGroup() {
     });
   });
 }
-
-//GET /jxcfd/user/JoinGroup?strZone=jxcfd&bizCode=jxcfd&source=jxcfd&dwEnv=7&_cfd_t=1607761523592&ptag=139045.1.2&strGroupId=Jxcfd_GroupId_126_1099529564598&dwIsNewUser=0&pgtimestamp=1607761523573&phoneID=c18613cab073b19ba6d9f4e49695c585997ad5e7&pgUUNum=4d650e8903ba1977a135100932d69c9a&_stk=_cfd_t%2CbizCode%2CdwEnv%2CdwIsNewUser%2CpgUUNum%2Cpgtimestamp%2CphoneID%2Cptag%2Csource%2CstrGroupId%2CstrZone&_ste=1&h5st=20201212162523592%3B8183163432738160%3B10009%3Btk01w930b1b41a8neHNMenRDSlhSCbRB7G7oajFDbBJVWgoTwCD%2B5eVx7y1NYJ6RT0M5rh%2BgKHk0FWo1QBcklgZb6M5p%3B3014257a08f20ffa9778756807623abd6406beef29b1ae5ae849557d13eb95a4&_=1607761523594&sceneval=2&g_login_type=1&callback=jsonpCBKG&g_ty=ls HTTP/1.1
 
 //助力好友寻宝大作战
 function joinGroup() {
@@ -738,9 +730,7 @@ function getCookies() {
       $.name,
       "【提示】请先获取京东账号一cookie\n直接使用NobyDa的京东签到获取",
       "https://bean.m.jd.com/",
-      {
-        "open-url": "https://bean.m.jd.com/",
-      }
+      { "open-url": "https://bean.m.jd.com/", }
     );
     return false;
   }
@@ -786,9 +776,7 @@ function showMsg() {
       const now = $.time("HH:mm").split(":");
       $.log(`\n${JSON.stringify(notifyTimes)}`);
       $.log(`\n${JSON.stringify(now)}`);
-      if (
-        notifyTimes.some((x) => x[0] === now[0] && (!x[1] || x[1] === now[1]))
-      ) {
+      if ( notifyTimes.some((x) => x[0] === now[0] && (!x[1] || x[1] === now[1])) ) {
         $.msg($.name, "", `\n${$.result.join("\n")}`);
       }
     } else {
