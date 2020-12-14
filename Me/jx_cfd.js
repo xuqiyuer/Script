@@ -2,7 +2,7 @@
 *
     Name: 京喜财富岛
     Address: 京喜App ====>>>> 全民赚大钱
-    Update: 2020/12/13 22:00
+    Update: 2020/12/14 17:30
     Thanks:
       whyour大佬
       TG: https://t.me/joinchat/O1WgnBbM18YjQQVFQ_D86w
@@ -96,13 +96,11 @@ $.info = {};
         `【💵财富值】任务前: ${beginInfo.ddwMoney}\n【💵财富值】任务后: ${endInfo.ddwMoney}`,
         `【💵财富值】净增值: ${endInfo.ddwMoney - beginInfo.ddwMoney}`
       );
-      
-			//出岛寻宝大作战
+      //出岛寻宝大作战
       await $.wait(500);
       await submitGroupId();
       await $.wait(500);
-      await joinGroup();	
-			
+      await joinGroup();
       //提交邀请码
       await $.wait(500);
       await submitInviteId(userName);
