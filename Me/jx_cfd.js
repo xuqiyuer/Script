@@ -97,6 +97,12 @@ $.info = {};
         `【💵财富值】净增值: ${endInfo.ddwMoney - beginInfo.ddwMoney}`
       );
       
+			//出岛寻宝大作战
+      await $.wait(500);
+      await submitGroupId();
+      await $.wait(500);
+      await joinGroup();	
+			
       //提交邀请码
       await $.wait(500);
       await submitInviteId(userName);
@@ -106,12 +112,6 @@ $.info = {};
       //普通助力
       await $.wait(500);
       await createAssistUser();
-
-      //出岛寻宝大作战
-      await $.wait(500);
-      await submitGroupId();
-      await $.wait(500);
-      await joinGroup();
     }
   }
   await showMsg();
@@ -169,11 +169,7 @@ function querySignList() {
     $.get(taskUrl(`task/QuerySignListV2`), async (err, resp, data) => {
       try {
         const { iRet, sData: { Sign = [{}], dwUserFlag }, sErrMsg } = JSON.parse(data);
-        $.log(
-          `\n签到列表：${sErrMsg}\n${
-            $.showLog ? data : ""
-          }`
-        );
+        $.log(`\n签到列表：${sErrMsg}\n${$.showLog ? data : ""}`);
         const [{ dwStatus, ddwMoney }] = Sign.filter(x => x.dwShowFlag === 1);
         if (dwStatus === 0) {
           await userSignReward(dwUserFlag, ddwMoney);
@@ -201,11 +197,7 @@ async function userSignReward(dwUserFlag,ddwMoney) {
         try {
           //$.log(data)
           const { iRet, sData: { ddwMoney }, sErrMsg } = JSON.parse(data);
-          $.log(
-            `\n签到：${sErrMsg}，获得财富 ¥ ${ddwMoney || 0}\n${
-              $.showLog ? data : ""
-            }`
-          );
+          $.log(`\n签到：${sErrMsg}，获得财富 ¥ ${ddwMoney || 0}\n${$.showLog ? data : ""}`);
         } catch (e) {
           $.logErr(e, resp);
         } finally {
@@ -349,11 +341,7 @@ function doTreasureHunt(place) {
         try {
           //$.log(data);
           const { iRet, dwExpericnce, sErrMsg } = JSON.parse(data);
-          $.log(
-            `\n【${place}】🎁寻宝：${sErrMsg} ，获取随机奖励：¥ ${dwExpericnce || 0} \n${
-              $.showLog ? data : ""
-            }`
-          );
+          $.log(`\n【${place}】🎁寻宝：${sErrMsg} ，获取随机奖励：¥ ${dwExpericnce || 0} \n${$.showLog ? data : ""}`);
           resolve(iRet)
         } catch (e) {
           $.logErr(e, resp);
