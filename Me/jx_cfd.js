@@ -16,10 +16,10 @@
     ❗️❗️❗️寻宝报错声明: 出现app内助力错误，使用上述方式获取Token再试
     
     hostname = wq.jd.com
-      
+    
     Quantumult X:
     [task_local]
-    0 * * * * , tag=京喜财富岛, img-url=https://raw.githubusercontent.com/58xinian/icon/master/jxcfd.png, enabled=true
+    0 * * * * https://raw.githubusercontent.com/MoPoQAQ/Script/main/Me/jx_cfd.js, tag=京喜财富岛, img-url=https://raw.githubusercontent.com/58xinian/icon/master/jxcfd.png, enabled=true
     [rewrite_local]
     ^https\:\/\/wq\.jd\.com\/cubeactive\/farm\/dotask url script-request-header https://raw.githubusercontent.com/whyour/hundun/master/quanx/jx_nc.cookie.js
 
@@ -582,7 +582,7 @@ function createSuperAssistUser() {
     $.get({ url: 'https://api.ninesix.cc/api/jx-cfd' }, (err, resp, _data) => {
       try {
         const { data = {} } = JSON.parse(_data);
-        $.log(`\n【👫🏻超级助力】超级助力码：${data.value}\n${$.showLog ? _data : ''}`);        
+        $.log(`\n【👫🏻超级助力】超级助力码：${data.value}\n${$.showLog ? _data : ''}`);
         $.get(taskUrl('user/JoinScene', `strPgtimestamp=${$.currentToken['timestamp']}&strPhoneID=${$.currentToken['phoneid']}&strPgUUNum=${$.currentToken['farm_jstoken']}&strShareId=${escape(data.value)}&dwSceneId=${sceneId}&dwType=2`), (err, resp, data) => {
           try {
             const { sErrMsg, data: { rewardMoney = 0 } = {} } = JSON.parse(data);
