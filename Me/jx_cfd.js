@@ -2,7 +2,7 @@
 *
     Name: 京喜财富岛
     Address: 京喜App ====>>>> 全民赚大钱
-    Update: 2020/12/18 8:45
+    Update: 2020/12/18 22:00
     Thanks:
       whyour大佬
       TG: https://t.me/joinchat/O1WgnBbM18YjQQVFQ_D86w
@@ -31,11 +31,11 @@
     Surge:
     京喜财富岛 = type=cron,cronexp="0 * * * *",wake-system=1,timeout=20,script-path=https://raw.githubusercontent.com/MoPoQAQ/Script/main/Me/jx_cfd.js
     京喜农场cookie = type=http-request,pattern=^https\:\/\/wq\.jd\.com\/cubeactive\/farm\/dotask,requires-body=0,max-size=0,script-path=https://raw.githubusercontent.com/whyour/hundun/master/quanx/jx_nc.cookie.js
-		
-		Shadowrocket:
-		[Script]
-		京喜财富岛 = type=cron,script-path=https://raw.githubusercontent.com/MoPoQAQ/Script/main/Me/jx_cfd.js,cronexpr="0 * * * *",timeout=120,enable=true
-		京喜农场Cookie = type=http-request,script-path=https://raw.githubusercontent.com/whyour/hundun/master/quanx/jx_nc.cookie.js,pattern=^https\:\/\/wq\.jd\.com\/cubeactive\/farm\/dotask,max-size=131072,timeout=10,enable=true
+    
+    Shadowrocket:
+    [Script]
+    京喜财富岛 = type=cron,script-path=https://raw.githubusercontent.com/MoPoQAQ/Script/main/Me/jx_cfd.js,cronexpr="0 * * * *",timeout=120,enable=true
+    京喜农场Cookie = type=http-request,script-path=https://raw.githubusercontent.com/whyour/hundun/master/quanx/jx_nc.cookie.js,pattern=^https\:\/\/wq\.jd\.com\/cubeactive\/farm\/dotask,max-size=131072,timeout=10,enable=true
 
     BoxJS订阅
     https://raw.githubusercontent.com/whyour/hundun/master/quanx/whyour.boxjs.json
@@ -91,7 +91,7 @@ $.info = {};
       await getTaskList(1);
       await $.wait(500);
       await browserTask(1);
-      
+
       //抽奖
       await $.wait(500);
       await funCenterState();
@@ -105,6 +105,7 @@ $.info = {};
         `【💵财富值】任务前: ${beginInfo.ddwMoney}\n【💵财富值】任务后: ${endInfo.ddwMoney}`,
         `【💵财富值】净增值: ${endInfo.ddwMoney - beginInfo.ddwMoney}`
       );
+
       //出岛寻宝大作战
       await $.wait(500);
       await submitGroupId();
@@ -129,8 +130,8 @@ $.info = {};
 
 
 function getUserInfo() {
-  return new Promise((resolve) => {
-    $.get(taskUrl(`user/QueryUserInfo`), async (err, resp, data) => {
+  return new Promise(async (resolve) => {
+    $.get(taskUrl(`user/QueryUserInfo`), (err, resp, data) => {
       try {
         const {
           iret,
@@ -217,44 +218,90 @@ async function userSignReward(dwUserFlag,ddwMoney) {
 }
 
 //领取财富值
+//dwSource=[1,2,3]  1:岛主自产财富 2:普通助力财富 3:超级助力财富
 function getMoney() {
   return new Promise(async (resolve) => {
-    const sceneList = eval('('+ JSON.stringify($.info.SceneList) +')');
-    const sceneIds = Object.keys($.info.SceneList);
-    for (sceneId of sceneIds) {
-      const employeeList = eval('('+ JSON.stringify(sceneList[sceneId].EmployeeList) +')');
-      const strEmployeeId = Object.keys(employeeList)
-      if(employeeList !== ""){  
-        for( employeeId of strEmployeeId) {
-          $.get(
-            taskUrl(`user/GetMoney`, `dwSceneId=${sceneId}&strEmployeeId=${employeeId}&dwSource=2`), 
-            async (err, resp, data) => {
-              try {
-                const { dwMoney, iRet, sErrMsg, strPin} = JSON.parse(data);
-                $.log(`\n【${sceneList[sceneId].strSceneName}】👬好友${strPin} : 获取助力财富值：¥ ${dwMoney || 0}\n${$.showLog ? data : ""}`);
-              } catch (e) {
-                $.logErr(e, resp);
-              } finally {
-                resolve();
-              }
-            }
-          );
-        }
-      }
-      $.get(
-        taskUrl(`user/GetMoney`,`dwSceneId=${sceneId}&strEmployeeId=undefined&dwSource=1`),
-        async (err, resp, data) => {
-          try {
-            const { iRet, dwMoney, sErrMsg } = JSON.parse(data);
-            $.log(`\n【${sceneList[sceneId].strSceneName}】🏝岛主 : ${sErrMsg} 获取财富值：¥ ${dwMoney || 0}\n${$.showLog ? data : ""}`);
-          } catch (e) {
-            $.logErr(e, resp);
-          } finally {
-            resolve();
+    const sceneList = $.info.SceneList;
+    for (var _key of Object.keys($.info.SceneList)) {
+      //await $.log(`========【${sceneList[_key].strSceneName}】========`);
+      try {
+        //领取自产财富
+        await $.wait(500);
+        await getMoney_dwSource_1( _key, sceneList );
+        //领取普通助力的财富
+        const employeeList = eval('('+ JSON.stringify(sceneList[_key].EmployeeList) +')');
+        if(employeeList !== ""){
+          for( var key of Object.keys(employeeList) ) {
+            await $.wait(500);
+            await getMoney_dwSource_2( _key, sceneList, key );
           }
         }
-      );
+        //领取超级助力财富
+        await $.wait(500);
+        await getMoney_dwSource_3( _key, sceneList );
+      } catch (e) {
+        $.logErr(e, resp);
+      } finally {
+        resolve();
+      }
     }
+  });
+}
+
+//领取自产财富
+function getMoney_dwSource_1( _key, sceneList ) {
+  return new Promise(async (resolve) => {
+    $.get(
+      taskUrl(`user/GetMoney`,`dwSceneId=${_key}&strEmployeeId=undefined&dwSource=1`),
+      async (err, resp, data) => {
+        try {
+          const { iRet, dwMoney, sErrMsg } = JSON.parse(data);
+          $.log(`\n【${sceneList[_key].strSceneName}】🏝岛主 : ${ sErrMsg == 'success' ? `获取财富值：¥ ${dwMoney || 0}` : sErrMsg } \n${$.showLog ? data : ""}`);
+        } catch (e) {
+          $.logErr(e, resp);
+        } finally {
+          resolve();
+        }
+      }
+    );
+  });
+}
+
+//领取普通助力的财富
+function getMoney_dwSource_2( _key, sceneList, key ) {
+  return new Promise(async (resolve) => {
+    $.get(
+      taskUrl(`user/GetMoney`, `dwSceneId=${_key}&strEmployeeId=${key}&dwSource=2`), 
+      async (err, resp, data) => {
+        try {
+          const { dwMoney, iRet, sErrMsg, strPin } = JSON.parse(data);
+          $.log(`\n【${sceneList[_key].strSceneName}】👬好友【${strPin}】: ${ sErrMsg == 'success' ? `获取普通助力财富值：¥ ${dwMoney || 0}` : sErrMsg } \n${$.showLog ? data : ""}`);
+        } catch (e) {
+          $.logErr(e, resp);
+        } finally {
+          resolve();
+        }
+      }
+    );
+  });
+}
+
+//领取超级助力财富
+function getMoney_dwSource_3( _key, sceneList ) {
+  return new Promise(async (resolve) => {
+    $.get(
+      taskUrl(`user/GetMoney`,`dwSceneId=${_key}&strEmployeeId=&dwSource=3&strPgtimestamp=${$.currentToken['timestamp']}&strPhoneID=${$.currentToken['phoneid']}&strPgUUNum=${$.currentToken['farm_jstoken']}`), 
+      async (err, resp, data) => {
+        try {
+          const { iRet, dwMoney, sErrMsg, strPin } = JSON.parse(data);
+          $.log(`\n【${sceneList[_key].strSceneName}】👬好友【${strPin}】: ${ sErrMsg == 'success' ? `获取超级助力财富值：¥ ${dwMoney || 0}` : sErrMsg } \n${$.showLog ? data : ""}`);
+        } catch (e) {
+          $.logErr(e, resp);
+        } finally {
+          resolve();
+        }
+      }
+    );
   });
 }
 
@@ -518,7 +565,6 @@ function funCenterState() {
   return new Promise(resolve => {
     $.get(taskUrl(`consume/FunCenterState`, `strType=1`), async(err, resp, data) => {
       try {
-        //$.log(data);
         const {  SlotMachine: { ddwConfVersion, dwFreeCount, strCouponPool, strGoodsPool } = {}, iRet, sErrMsg } = JSON.parse(data);
         if(dwFreeCount == 1) {
           await $.wait(500);
@@ -581,9 +627,8 @@ function submitInviteId(userName) {
 //随机超级助力好友
 function createSuperAssistUser() {
   return new Promise(resolve => {
-    const sceneList = eval('('+ JSON.stringify($.info.SceneList) +')');
     const sceneIds = Object.keys($.info.SceneList);
-    const sceneId = Math.min(...sceneIds);
+    const sceneId = Math.max(...sceneIds);
     $.get({ url: 'https://api.ninesix.cc/api/jx-cfd' }, async (err, resp, _data) => {
       try {
         const { data = {} } = JSON.parse(_data);
@@ -610,9 +655,8 @@ function createSuperAssistUser() {
 //随机助力好友
 function createAssistUser() {
   return new Promise(resolve => {
-    const sceneList = eval('('+ JSON.stringify($.info.SceneList) +')');
     const sceneIds = Object.keys($.info.SceneList);
-    const sceneId = Math.min(...sceneIds);
+    const sceneId = Math.max(...sceneIds);
     $.get({ url: 'https://api.ninesix.cc/api/jx-cfd' }, async (err, resp, _data) => {
       try {
         const { data = {} } = JSON.parse(_data);
