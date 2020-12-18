@@ -2,7 +2,7 @@
 *
     Name: 京喜财富岛
     Address: 京喜App ====>>>> 全民赚大钱
-    Update: 2020/12/18 8:33
+    Update: 2020/12/18 8:45
     Thanks:
       whyour大佬
       TG: https://t.me/joinchat/O1WgnBbM18YjQQVFQ_D86w
@@ -728,7 +728,7 @@ function openPeriodBox() {
       try {
         const { PeriodBox = [{}] } = JSON.parse(data);
         for (var i = 0; i < PeriodBox.length ; i++) {
-          const { dwStatus, dwSeq，strBrandName } = PeriodBox[i];
+          const { dwStatus, dwSeq, strBrandName } = PeriodBox[i];
           //1:未达条件 2:可开启 3:已开启
           if (dwStatus == 2) {
             $.get(taskUrl(`user/OpenPeriodBox`, `dwSeq=${dwSeq}`), async (err, resp, data) => {
