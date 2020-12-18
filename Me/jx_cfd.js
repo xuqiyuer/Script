@@ -2,7 +2,7 @@
 *
     Name: 京喜财富岛
     Address: 京喜App ====>>>> 全民赚大钱
-    Update: 2020/12/18 8:30
+    Update: 2020/12/18 8:33s
     Thanks:
       whyour大佬
       TG: https://t.me/joinchat/O1WgnBbM18YjQQVFQ_D86w
@@ -745,6 +745,7 @@ function openPeriodBox() {
             $.log(`\n【🏝寻宝大作战】【${strBrandName}】：宝箱已开启过！`);
           } else {
             $.log(`\n【🏝寻宝大作战】【${strBrandName}】：未达到宝箱开启条件，快去邀请好友助力吧！`);
+            resolve();
           }
         }
       } catch (e) {
