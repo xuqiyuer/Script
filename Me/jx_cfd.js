@@ -2,7 +2,7 @@
 *
     Name: 京喜财富岛
     Address: 京喜App ====>>>> 全民赚大钱
-    Update: 2020/12/17 15:00
+    Update: 2020/12/18 8:00
     Thanks:
       whyour大佬
       TG: https://t.me/joinchat/O1WgnBbM18YjQQVFQ_D86w
@@ -96,6 +96,10 @@ $.info = {};
       await $.wait(500);
       await funCenterState();
 
+      //领取寻宝宝箱
+      await $.wait(500);
+      await openPeriodBox();
+
       const endInfo = await getUserInfo();
       $.result.push(
         `【💵财富值】任务前: ${beginInfo.ddwMoney}\n【💵财富值】任务后: ${endInfo.ddwMoney}`,
@@ -117,7 +121,7 @@ $.info = {};
       await createAssistUser();
     }
   }
-	await $.wait(500);
+  await $.wait(500);
   await showMsg();
 })()
   .catch((e) => $.logErr(e))
@@ -553,7 +557,7 @@ function submitInviteId(userName) {
       return;
     }
     $.log('\n【🏖岛主】你的互助码: ' + $.info.strMyShareId);
-		$.post(
+    $.post(
       {
         url: `https://api.ninesix.cc/api/jx-cfd/${$.info.strMyShareId}/${encodeURIComponent(userName)}`,
       },
@@ -570,7 +574,7 @@ function submitInviteId(userName) {
           resolve();
         }
       },
-		);
+    );
   });
 }
 
@@ -597,7 +601,7 @@ function createSuperAssistUser() {
       } catch (e) {
         $.logErr(e, resp);
       } finally {
-      	resolve();
+        resolve();
       }
     });
   });
@@ -647,23 +651,23 @@ function submitGroupId() {
             return;
           }
         } else {
-        	$.log('你的【🏝寻宝大作战】互助码: ' + strGroupId);
-        	$.post(
-						{url: `https://api.ninesix.cc/api/jx-cfd-group/${strGroupId}/${encodeURIComponent(strPin)}`},
-          	async (err, resp, _data) => {
-            	try {
-              	const { data = {}, code } = JSON.parse(_data);
-              	$.log(`\n【🏝寻宝大作战】邀请码提交：${code}\n${$.showLog ? _data : ''}`);
-              	if (data.value) {
-                	$.result.push('【🏝寻宝大作战】邀请码提交成功！');
-              	}
-            	} catch (e) {
-              	$.logErr(e, resp);
-            	} finally {
-              	resolve();
-            	}
-          	}
-					);
+          $.log('你的【🏝寻宝大作战】互助码: ' + strGroupId);
+          $.post(
+            {url: `https://api.ninesix.cc/api/jx-cfd-group/${strGroupId}/${encodeURIComponent(strPin)}`},
+            async (err, resp, _data) => {
+              try {
+                const { data = {}, code } = JSON.parse(_data);
+                $.log(`\n【🏝寻宝大作战】邀请码提交：${code}\n${$.showLog ? _data : ''}`);
+                if (data.value) {
+                  $.result.push('【🏝寻宝大作战】邀请码提交成功！');
+                }
+              } catch (e) {
+                $.logErr(e, resp);
+              } finally {
+                resolve();
+              }
+            }
+          );
         }
       } catch (e) {
         $.logErr(e, resp);
@@ -711,7 +715,42 @@ function joinGroup() {
       } catch (e) {
         $.logErr(e, resp);
       } finally {
-      	resolve();
+        resolve();
+      }
+    });
+  });
+}
+
+//寻宝大作战开宝箱
+function openPeriodBox() {
+  return new Promise( async (resolve) => { 
+    $.get(taskUrl(`user/GatherForture`), async (err, resp, data) => {
+      try {
+        const { PeriodBox = [{}] } = JSON.parse(data);
+        for (var i = 0; i < PeriodBox.length ; i++) {
+          const { dwStatus, dwSeq } = PeriodBox[i];
+          //1:未达条件 2:可开启 3:已开启
+          if (dwStatus == 2) {
+            $.get(taskUrl(`user/OpenPeriodBox`, `dwSeq=${dwSeq}`), async (err, resp, data) => {
+              try {
+                const { dwMoney, iRet, sErrMsg, strBrandName } = JSON.parse(data)
+                $.log(`\n【🏝寻宝大作战】【${strBrandName}】开宝箱：${sErrMsg == 'success' ? ` 获得财富值 ¥ ${dwMoney}` : sErrMsg }\n${$.showLog ? data : ''}`);
+              } catch (e) {
+                $.logErr(e, resp);
+              } finally {
+                resolve();
+              }
+            });
+          } else if (dwStatus == 3) {
+            $.log(`\n【🏝寻宝大作战】宝箱已开启过！`);
+          } else {
+            $.log(`\n【🏝寻宝大作战】未达到宝箱开启条件，快去邀请好友助力吧！`);
+          }
+        }
+      } catch (e) {
+        $.logErr(e, resp);
+      } finally {
+        resolve(); 
       }
     });
   });
