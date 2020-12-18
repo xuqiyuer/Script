@@ -2,7 +2,7 @@
 *
     Name: 京喜财富岛
     Address: 京喜App ====>>>> 全民赚大钱
-    Update: 2020/12/18 8:33s
+    Update: 2020/12/18 8:33
     Thanks:
       whyour大佬
       TG: https://t.me/joinchat/O1WgnBbM18YjQQVFQ_D86w
