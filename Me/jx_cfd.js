@@ -2,7 +2,7 @@
 *
     Name: 京喜财富岛
     Address: 京喜App ====>>>> 全民赚大钱
-    Update: 2020/12/18 8:00
+    Update: 2020/12/18 8:30
     Thanks:
       whyour大佬
       TG: https://t.me/joinchat/O1WgnBbM18YjQQVFQ_D86w
@@ -728,12 +728,12 @@ function openPeriodBox() {
       try {
         const { PeriodBox = [{}] } = JSON.parse(data);
         for (var i = 0; i < PeriodBox.length ; i++) {
-          const { dwStatus, dwSeq } = PeriodBox[i];
+          const { dwStatus, dwSeq，strBrandName } = PeriodBox[i];
           //1:未达条件 2:可开启 3:已开启
           if (dwStatus == 2) {
             $.get(taskUrl(`user/OpenPeriodBox`, `dwSeq=${dwSeq}`), async (err, resp, data) => {
               try {
-                const { dwMoney, iRet, sErrMsg, strBrandName } = JSON.parse(data)
+                const { dwMoney, iRet, sErrMsg } = JSON.parse(data)
                 $.log(`\n【🏝寻宝大作战】【${strBrandName}】开宝箱：${sErrMsg == 'success' ? ` 获得财富值 ¥ ${dwMoney}` : sErrMsg }\n${$.showLog ? data : ''}`);
               } catch (e) {
                 $.logErr(e, resp);
@@ -742,9 +742,9 @@ function openPeriodBox() {
               }
             });
           } else if (dwStatus == 3) {
-            $.log(`\n【🏝寻宝大作战】宝箱已开启过！`);
+            $.log(`\n【🏝寻宝大作战】【${strBrandName}】：宝箱已开启过！`);
           } else {
-            $.log(`\n【🏝寻宝大作战】未达到宝箱开启条件，快去邀请好友助力吧！`);
+            $.log(`\n【🏝寻宝大作战】【${strBrandName}】：未达到宝箱开启条件，快去邀请好友助力吧！`);
           }
         }
       } catch (e) {
