@@ -2,7 +2,7 @@
 *
     Name: 京喜财富岛
     Address: 京喜App ====>>>> 全民赚大钱
-    Update: 2020/12/18 22:00
+    Update: 2020/12/19 8:00
     Thanks:
       whyour大佬
       TG: https://t.me/joinchat/O1WgnBbM18YjQQVFQ_D86w
@@ -223,7 +223,6 @@ function getMoney() {
   return new Promise(async (resolve) => {
     const sceneList = $.info.SceneList;
     for (var _key of Object.keys($.info.SceneList)) {
-      //await $.log(`========【${sceneList[_key].strSceneName}】========`);
       try {
         //领取自产财富
         await $.wait(500);
@@ -275,7 +274,7 @@ function getMoney_dwSource_2( _key, sceneList, key ) {
       async (err, resp, data) => {
         try {
           const { dwMoney, iRet, sErrMsg, strPin } = JSON.parse(data);
-          $.log(`\n【${sceneList[_key].strSceneName}】👬好友【${strPin}】: ${ sErrMsg == 'success' ? `获取普通助力财富值：¥ ${dwMoney || 0}` : sErrMsg } \n${$.showLog ? data : ""}`);
+          $.log(`\n【${sceneList[_key].strSceneName}】👬好友: ${ sErrMsg == 'success' ? `获取普通助力财富值：¥ ${dwMoney || 0}` : sErrMsg } \n${$.showLog ? data : ""}`);
         } catch (e) {
           $.logErr(e, resp);
         } finally {
@@ -294,7 +293,7 @@ function getMoney_dwSource_3( _key, sceneList ) {
       async (err, resp, data) => {
         try {
           const { iRet, dwMoney, sErrMsg, strPin } = JSON.parse(data);
-          $.log(`\n【${sceneList[_key].strSceneName}】👬好友【${strPin}】: ${ sErrMsg == 'success' ? `获取超级助力财富值：¥ ${dwMoney || 0}` : sErrMsg } \n${$.showLog ? data : ""}`);
+          $.log(`\n【${sceneList[_key].strSceneName}】👬好友: ${ sErrMsg == 'success' ? `获取超级助力财富值：¥ ${dwMoney || 0}` : sErrMsg } \n${$.showLog ? data : ""}`);
         } catch (e) {
           $.logErr(e, resp);
         } finally {
@@ -628,7 +627,7 @@ function submitInviteId(userName) {
 function createSuperAssistUser() {
   return new Promise(resolve => {
     const sceneIds = Object.keys($.info.SceneList);
-    const sceneId = Math.max(...sceneIds);
+    const sceneId = Math.min(...sceneIds);
     $.get({ url: 'https://api.ninesix.cc/api/jx-cfd' }, async (err, resp, _data) => {
       try {
         const { data = {} } = JSON.parse(_data);
@@ -656,7 +655,7 @@ function createSuperAssistUser() {
 function createAssistUser() {
   return new Promise(resolve => {
     const sceneIds = Object.keys($.info.SceneList);
-    const sceneId = Math.max(...sceneIds);
+    const sceneId = Math.min(...sceneIds);
     $.get({ url: 'https://api.ninesix.cc/api/jx-cfd' }, async (err, resp, _data) => {
       try {
         const { data = {} } = JSON.parse(_data);
@@ -775,7 +774,8 @@ function openPeriodBox() {
           const { dwStatus, dwSeq, strBrandName } = PeriodBox[i];
           //1:未达条件 2:可开启 3:已开启
           if (dwStatus == 2) {
-            $.get(taskUrl(`user/OpenPeriodBox`, `dwSeq=${dwSeq}`), async (err, resp, data) => {
+            await $.wait(1000);
+            await $.get(taskUrl(`user/OpenPeriodBox`, `dwSeq=${dwSeq}`), async (err, resp, data) => {
               try {
                 const { dwMoney, iRet, sErrMsg } = JSON.parse(data)
                 $.log(`\n【🏝寻宝大作战】【${strBrandName}】开宝箱：${sErrMsg == 'success' ? ` 获得财富值 ¥ ${dwMoney}` : sErrMsg }\n${$.showLog ? data : ''}`);
@@ -786,9 +786,9 @@ function openPeriodBox() {
               }
             });
           } else if (dwStatus == 3) {
-            $.log(`\n【🏝寻宝大作战】【${strBrandName}】：宝箱已开启过！`);
+            $.log(`\n【🏝寻宝大作战】【${strBrandName}】开宝箱：宝箱已开启过！`);
           } else {
-            $.log(`\n【🏝寻宝大作战】【${strBrandName}】：未达到宝箱开启条件，快去邀请好友助力吧！`);
+            $.log(`\n【🏝寻宝大作战】【${strBrandName}】开宝箱：未达到宝箱开启条件，快去邀请好友助力吧！`);
             resolve();
           }
         }
