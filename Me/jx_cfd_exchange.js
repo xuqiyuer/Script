@@ -138,7 +138,7 @@ function getCookies() {
 }
 
 function showMsg() {
-  return new Promise((resolve) => {
+  return new Promise(async (resolve) => {
     if ($.notifyTime) {
       const notifyTimes = $.notifyTime.split(",").map((x) => x.split(":"));
       const now = $.time("HH:mm").split(":");
