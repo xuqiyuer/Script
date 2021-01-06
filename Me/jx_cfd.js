@@ -62,8 +62,10 @@ $.info = {};
     $.currentCookie = $.cookieArr[i];
     $.currentToken = JSON.parse($.tokens[i] || '{}');
     if ($.currentCookie) {
-      const userName = decodeURIComponent($.currentCookie.match(/pt_pin=(.+?);/) && $.currentCookie.match(/pt_pin=(.+?);/)[1]);
-      $.log(`\n开始【京东账号${i + 1}】${userName}`);
+      $.userName = decodeURIComponent($.currentCookie.match(/pt_pin=(.+?);/) && $.currentCookie.match(/pt_pin=(.+?);/)[1]);
+      $.index = i + 1;
+      $.nickName = '';
+      $.log(`\n开始【京东账号${i + 1}】${$.userName}`);
 
       const beginInfo = await getUserInfo();
          
@@ -114,7 +116,7 @@ $.info = {};
       await joinGroup();
       //提交邀请码
       await $.wait(500);
-      await submitInviteId(userName);
+      await submitInviteId($.userName);
       //超级助力
       await $.wait(500);
       await createSuperAssistUser();
@@ -866,7 +868,7 @@ function showMsg() {
       $.msg($.name, "", `\n${$.result.join("\n")}`);
     }
     if ($.isNode()) {
-      await notify.sendNotify(`${$.name} - 账号${$.index} - ${$.nickName}`, `账号${$.index}：${$.nickName || $.UserName}\n${$.result.join("\n")}`);
+      await notify.sendNotify(`${$.name} - 账号${$.index} - ${$.nickName}`, `账号${$.index}：${$.nickName || $.userName}\n${$.result.join("\n")}`);
     }
     resolve();
   });
