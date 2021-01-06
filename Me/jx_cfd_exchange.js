@@ -153,7 +153,7 @@ function showMsg() {
       $.msg($.name, "", `\n${$.result.join("\n")}`);
     }
     if ($.isNode()) {
-      await notify.sendNotify(${$.name} - 账号${$.index} - ${$.nickName}`, `账号${$.index}：${$.nickName || $.UserName}\n${$.result.join("\n")}`);
+      await notify.sendNotify(`${$.name} - 账号${$.index} - ${$.nickName}`, `账号${$.index}：${$.nickName || $.UserName}\n${$.result.join("\n")}`);
     }
     resolve();
   });
