@@ -2,7 +2,7 @@
 *
     Name: 京喜财富岛
     Address: 京喜App ====>>>> 全民赚大钱
-    Update: 2020/12/19 8:00
+    Update: 2021/1/6 21:30
     Thanks:
       whyour大佬
       TG: https://t.me/joinchat/O1WgnBbM18YjQQVFQ_D86w
@@ -44,6 +44,7 @@
 
 const $ = new Env("京喜财富岛");
 const JD_API_HOST = "https://m.jingxi.com/";
+const notify = $.isNode() ? require('./sendNotify') : '';
 const jdCookieNode = $.isNode() ? require("./jdCookie.js") : "";
 $.tokens = [$.getdata('jxnc_token1') || '{}', $.getdata('jxnc_token2') || '{}'];
 $.showLog = $.getdata("cfd_showLog") ? $.getdata("cfd_showLog") === "true" : false;
@@ -863,6 +864,9 @@ function showMsg() {
       }
     } else {
       $.msg($.name, "", `\n${$.result.join("\n")}`);
+    }
+    if ($.isNode()) {
+      await notify.sendNotify(${$.name} - 账号${$.index} - ${$.nickName}`, `账号${$.index}：${$.nickName || $.UserName}\n${$.result.join("\n")}`);
     }
     resolve();
   });
