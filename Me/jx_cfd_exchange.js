@@ -1,7 +1,7 @@
 /**
 *
   Name: 京喜财富岛超值兑换
-  Update: 2020/12/10 17:00
+  Update: 2021/1/6 22:30
   
   Quantumult X:
   [task_local]
