@@ -16,6 +16,7 @@
 
 const $ = new Env("京喜财富岛超值兑换");
 const JD_API_HOST = "https://m.jingxi.com/";
+const notify = $.isNode() ? require('./sendNotify') : '';
 const jdCookieNode = $.isNode() ? require("./jdCookie.js") : "";
 $.result = [];
 $.cookieArr = [];
@@ -150,6 +151,9 @@ function showMsg() {
       }
     } else {
       $.msg($.name, "", `\n${$.result.join("\n")}`);
+    }
+    if ($.isNode()) {
+      await notify.sendNotify(${$.name} - 账号${$.index} - ${$.nickName}`, `账号${$.index}：${$.nickName || $.UserName}\n${$.result.join("\n")}`);
     }
     resolve();
   });
