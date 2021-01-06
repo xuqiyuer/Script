@@ -27,8 +27,10 @@ $.currentCookie = '';
   for (let i = 0; i < $.cookieArr.length; i++) {
     $.currentCookie = $.cookieArr[i];
     if ($.currentCookie) {
-      const userName =  decodeURIComponent($.currentCookie.match(/pt_pin=(.+?);/) && $.currentCookie.match(/pt_pin=(.+?);/)[1]);
-      $.log(`开始【京东账号${i + 1}】${userName}`);
+      $.userName =  decodeURIComponent($.currentCookie.match(/pt_pin=(.+?);/) && $.currentCookie.match(/pt_pin=(.+?);/)[1]);
+      $.index = i + 1;
+      $.nickName = '';
+      $.log(`开始【京东账号${i + 1}】${$.userName}`);
       $.result.push(`==============🎁财富超值兑换🎁==============`);
       await getExchange();
     }
@@ -37,9 +39,6 @@ $.currentCookie = '';
 })()
   .catch((e) => $.logErr(e))
   .finally(() => $.done());
-  
-
-//GET /jxcfd/task/QueryAllConfig?strZone=jxcfd&bizCode=jxcfd&source=jxcfd&dwEnv=7&_cfd_t=1607489676606&ptag=&_=1607489676625&sceneval=2&g_login_type=1&callback=jsonpCBKB&g_ty=ls
 
 function getExchange() {
   return new Promise(async (resolve) => {
@@ -153,7 +152,7 @@ function showMsg() {
       $.msg($.name, "", `\n${$.result.join("\n")}`);
     }
     if ($.isNode()) {
-      await notify.sendNotify(`${$.name} - 账号${$.index} - ${$.nickName}`, `账号${$.index}：${$.nickName || $.UserName}\n${$.result.join("\n")}`);
+      await notify.sendNotify(`${$.name} - 账号${$.index} - ${$.nickName}`, `账号${$.index}：${$.nickName || $.userName}\n${$.result.join("\n")}`);
     }
     resolve();
   });
