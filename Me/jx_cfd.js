@@ -2,7 +2,7 @@
 *
     Name: 京喜财富岛
     Address: 京喜App ====>>>> 全民赚大钱
-    Update: 2021/1/6 21:30
+    Update: 2021/1/7 13:00
     Thanks:
       whyour大佬
       TG: https://t.me/joinchat/O1WgnBbM18YjQQVFQ_D86w
@@ -39,12 +39,19 @@
 
     BoxJS订阅
     https://raw.githubusercontent.com/whyour/hundun/master/quanx/whyour.boxjs.json
+
+    Docker通知推送：
+    ################################## 京喜财富岛是否静默运行 ##################################
+    ## 默认为 "false"，静默，不发送推送通知消息，如想收到通知，请修改为 "true"
+    ## 如果你不想完全关闭或者完全开启通知，只想在特定的时间发送通知，可以参考上面面的“定义东东萌宠是否静默运行”部分，设定几个if判断条件
+    export CFD_NOTIFY_CONTROL=""
 *
 **/
 
 const $ = new Env("京喜财富岛");
 const JD_API_HOST = "https://m.jingxi.com/";
 const notify = $.isNode() ? require('./sendNotify') : '';
+const jxcfdNotify = process.env.CFD_NOTIFY_CONTROL ? true : false;
 const jdCookieNode = $.isNode() ? require("./jdCookie.js") : "";
 $.tokens = [$.getdata('jxnc_token1') || '{}', $.getdata('jxnc_token2') || '{}'];
 $.showLog = $.getdata("cfd_showLog") ? $.getdata("cfd_showLog") === "true" : false;
@@ -65,6 +72,7 @@ $.info = {};
       $.userName = decodeURIComponent($.currentCookie.match(/pt_pin=(.+?);/) && $.currentCookie.match(/pt_pin=(.+?);/)[1]);
       $.index = i + 1;
       $.nickName = '';
+      
       $.log(`\n开始【京东账号${i + 1}】${$.userName}`);
 
       const beginInfo = await getUserInfo();
@@ -867,9 +875,10 @@ function showMsg() {
     } else {
       $.msg($.name, "", `\n${$.result.join("\n")}`);
     }
-    if ($.isNode()) {
+    
+    if ($.isNode() && jxcfdNotify)
       await notify.sendNotify(`${$.name} - 账号${$.index} - ${$.nickName}`, `账号${$.index}：${$.nickName || $.userName}\n${$.result.join("\n")}`);
-    }
+      
     resolve();
   });
 }
