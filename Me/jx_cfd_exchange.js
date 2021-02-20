@@ -5,7 +5,7 @@
   
   Quantumult X:
   [task_local]
-    30 6,12,22 * * * https://raw.githubusercontent.com/MoPoQAQ/Script/main/Me/jx_cfd_exchange.js, tag=京喜财富岛兑换提醒, img-url=https://raw.githubusercontent.com/58xinian/icon/master/jxcfd.png, enabled=true
+    30 6,12,22 * * * https://github.com/akuticlouds/Script/edit/main/Me/jx_cfd_exchange.js, tag=京喜财富岛兑换提醒, img-url=https://raw.githubusercontent.com/58xinian/icon/master/jxcfd.png, enabled=true
   Loon:
   [Script]
     cron "30 6,12,22 * * *" script-path=https://raw.githubusercontent.com/MoPoQAQ/Script/main/Me/jx_cfd.js,tag=京喜财富岛兑换提醒
